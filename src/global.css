@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* template web font stacks (保留) */
+  --font-display:
+    Spline Sans, Inter, ui-sans-serif, system-ui, sans-serif, Apple Color Emoji, Segoe UI Emoji,
+    Segoe UI Symbol, Noto Color Emoji;
+  --font-mono:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, Liberation Mono, Courier New, monospace;
+  --font-rounded: 'SF Pro Rounded', 'Hiragino Maru Gothic ProN', Meiryo, 'MS PGothic', sans-serif;
+  --font-serif: Georgia, 'Times New Roman', serif;
+
+  /* ===== VM0 semantic tokens — LIGHT (权威值,与 theme/theme.ts 一致) ===== */
+  --tint: #ed4e01; --tint-pressed: #de3f00; --tint-subtle: #fde7df; --on-tint: #ffffff;
+  --bg: #ffffff; --bg-elevated: #ffffff; --bg-grouped: #f3f5f8; --bg-secondary: #f3f5f8; --bg-tertiary: #ffffff;
+  --label: #14171d; --label-secondary: rgba(60,67,81,0.6); --label-tertiary: rgba(60,67,81,0.3); --label-quaternary: rgba(60,67,81,0.18);
+  --fill-1: rgba(120,129,146,0.2); --fill-2: rgba(120,129,146,0.16); --fill-3: rgba(120,129,146,0.12); --fill-4: rgba(120,129,146,0.08);
+  --separator: #c5cbd5; --separator-hairline: rgba(20,23,29,0.12);
+  --success: #2a7a4b; --destructive: #ef4444; --done: #6a5acd; --link: #2e6fc2; --warning: #b35a00;
+  --subtle-success: #e4f1ea; --subtle-destructive: #fdecec; --subtle-done: #ece9fa; --subtle-warning: #fbeedd; --subtle-link: #e5eef9;
+}
+
+/* ===== VM0 semantic tokens — DARK (系统偏好) ===== */
+@media (prefers-color-scheme: dark) {
+  :root {
+    --tint: #ff6321; --tint-pressed: #ff7a45; --tint-subtle: rgba(255,99,33,0.16); --on-tint: #ffffff;
+    --bg: #0c0e12; --bg-elevated: #1a1e26; --bg-grouped: #0c0e12; --bg-secondary: #1a1e26; --bg-tertiary: #22262f;
+    --label: #f3f5f8; --label-secondary: rgba(231,235,245,0.7); --label-tertiary: rgba(231,235,245,0.3); --label-quaternary: rgba(231,235,245,0.16);
+    --fill-1: rgba(120,129,146,0.36); --fill-2: rgba(120,129,146,0.32); --fill-3: rgba(120,129,146,0.24); --fill-4: rgba(120,129,146,0.18);
+    --separator: #333944; --separator-hairline: rgba(231,235,245,0.17);
+    --success: #34b368; --destructive: #ff5c5c; --done: #9a8cf0; --link: #5b9bf0; --warning: #e8912e;
+    --subtle-success: rgba(52,179,104,0.18); --subtle-destructive: rgba(255,92,92,0.18); --subtle-done: rgba(154,140,240,0.18); --subtle-warning: rgba(232,145,46,0.18); --subtle-link: rgba(91,155,240,0.18);
+  }
+}
+/* 手动切换:根节点加 .dark */
+.dark:root {
+  --tint: #ff6321; --tint-pressed: #ff7a45; --tint-subtle: rgba(255,99,33,0.16); --on-tint: #ffffff;
+  --bg: #0c0e12; --bg-elevated: #1a1e26; --bg-grouped: #0c0e12; --bg-secondary: #1a1e26; --bg-tertiary: #22262f;
+  --label: #f3f5f8; --label-secondary: rgba(231,235,245,0.7); --label-tertiary: rgba(231,235,245,0.3); --label-quaternary: rgba(231,235,245,0.16);
+  --fill-1: rgba(120,129,146,0.36); --fill-2: rgba(120,129,146,0.32); --fill-3: rgba(120,129,146,0.24); --fill-4: rgba(120,129,146,0.18);
+  --separator: #333944; --separator-hairline: rgba(231,235,245,0.17);
+  --success: #34b368; --destructive: #ff5c5c; --done: #9a8cf0; --link: #5b9bf0; --warning: #e8912e;
+  --subtle-success: rgba(52,179,104,0.18); --subtle-destructive: rgba(255,92,92,0.18); --subtle-done: rgba(154,140,240,0.18); --subtle-warning: rgba(232,145,46,0.18); --subtle-link: rgba(91,155,240,0.18);
+}
