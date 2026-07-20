@@ -18,7 +18,7 @@
   --label: #14171d; --label-secondary: rgba(60,67,81,0.6); --label-tertiary: rgba(60,67,81,0.3); --label-quaternary: rgba(60,67,81,0.18);
   --fill-1: rgba(120,129,146,0.2); --fill-2: rgba(120,129,146,0.16); --fill-3: rgba(120,129,146,0.12); --fill-4: rgba(120,129,146,0.08);
   --separator: #c5cbd5; --separator-hairline: rgba(20,23,29,0.12);
-  --success: #2a7a4b; --destructive: #ef4444; --done: #6a5acd; --link: #2e6fc2; --warning: #b35a00;
+  --success: #2a7a4b; --destructive: 239 68 68; --done: #6a5acd; --link: #2e6fc2; --warning: #b35a00;
   --subtle-success: #e4f1ea; --subtle-destructive: #fdecec; --subtle-done: #ece9fa; --subtle-warning: #fbeedd; --subtle-link: #e5eef9;
   --glass-bg: rgba(249,250,252,0.55); --glass-border: rgba(255,255,255,0.65); --glass-tint: rgba(237,78,1,0.82); --glass-ring: rgba(20,23,29,0.1); --bar-bg: rgba(255,255,255,0.78); --overlay: rgba(0,0,0,0.2); --sheet-bg: rgba(255,255,255,0.85);
 }
@@ -31,7 +31,7 @@
     --label: #f3f5f8; --label-secondary: rgba(231,235,245,0.7); --label-tertiary: rgba(231,235,245,0.3); --label-quaternary: rgba(231,235,245,0.16);
     --fill-1: rgba(120,129,146,0.36); --fill-2: rgba(120,129,146,0.32); --fill-3: rgba(120,129,146,0.24); --fill-4: rgba(120,129,146,0.18);
     --separator: #333944; --separator-hairline: rgba(231,235,245,0.17);
-    --success: #34b368; --destructive: #ff5c5c; --done: #9a8cf0; --link: #5b9bf0; --warning: #e8912e;
+    --success: #34b368; --destructive: 255 92 92; --done: #9a8cf0; --link: #5b9bf0; --warning: #e8912e;
     --subtle-success: rgba(52,179,104,0.18); --subtle-destructive: rgba(255,92,92,0.18); --subtle-done: rgba(154,140,240,0.18); --subtle-warning: rgba(232,145,46,0.18); --subtle-link: rgba(91,155,240,0.18);
     --glass-bg: rgba(30,34,42,0.45); --glass-border: rgba(255,255,255,0.16); --glass-tint: rgba(255,99,33,0.82); --glass-ring: rgba(0,0,0,0.45); --bar-bg: rgba(12,14,18,0.75); --overlay: rgba(0,0,0,0.5); --sheet-bg: rgba(26,30,38,0.92);
   }
@@ -44,7 +44,7 @@
   --label: #14171d; --label-secondary: rgba(60,67,81,0.6); --label-tertiary: rgba(60,67,81,0.3); --label-quaternary: rgba(60,67,81,0.18);
   --fill-1: rgba(120,129,146,0.2); --fill-2: rgba(120,129,146,0.16); --fill-3: rgba(120,129,146,0.12); --fill-4: rgba(120,129,146,0.08);
   --separator: #c5cbd5; --separator-hairline: rgba(20,23,29,0.12);
-  --success: #2a7a4b; --destructive: #ef4444; --done: #6a5acd; --link: #2e6fc2; --warning: #b35a00;
+  --success: #2a7a4b; --destructive: 239 68 68; --done: #6a5acd; --link: #2e6fc2; --warning: #b35a00;
   --subtle-success: #e4f1ea; --subtle-destructive: #fdecec; --subtle-done: #ece9fa; --subtle-warning: #fbeedd; --subtle-link: #e5eef9;
 }
 
@@ -56,6 +56,51 @@
   --label: #f3f5f8; --label-secondary: rgba(231,235,245,0.7); --label-tertiary: rgba(231,235,245,0.3); --label-quaternary: rgba(231,235,245,0.16);
   --fill-1: rgba(120,129,146,0.36); --fill-2: rgba(120,129,146,0.32); --fill-3: rgba(120,129,146,0.24); --fill-4: rgba(120,129,146,0.18);
   --separator: #333944; --separator-hairline: rgba(231,235,245,0.17);
-  --success: #34b368; --destructive: #ff5c5c; --done: #9a8cf0; --link: #5b9bf0; --warning: #e8912e;
+  --success: #34b368; --destructive: 255 92 92; --done: #9a8cf0; --link: #5b9bf0; --warning: #e8912e;
   --subtle-success: rgba(52,179,104,0.18); --subtle-destructive: rgba(255,92,92,0.18); --subtle-done: rgba(154,140,240,0.18); --subtle-warning: rgba(232,145,46,0.18); --subtle-link: rgba(91,155,240,0.18);
 }
+
+/* ===== gluestack-ui 语义色槽 → VM0(RGB 三元组,支持 /opacity;与 config.ts 同源) ===== */
+:root {
+  --primary: 237 78 1; --primary-foreground: 255 255 255;
+  --background: 255 255 255; --foreground: 20 23 29;
+  --card: 255 255 255; --card-foreground: 20 23 29;
+  --popover: 255 255 255; --popover-foreground: 20 23 29;
+  --secondary: 243 245 248; --secondary-foreground: 20 23 29;
+  --muted: 243 245 248; --muted-foreground: 108 115 128;
+  --accent: 237 239 242; --accent-foreground: 20 23 29;
+  --border: 197 203 213; --input: 197 203 213; --ring: 237 78 1;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --primary: 255 99 33; --primary-foreground: 255 255 255;
+    --background: 12 14 18; --foreground: 243 245 248;
+    --card: 26 30 38; --card-foreground: 243 245 248;
+    --popover: 26 30 38; --popover-foreground: 243 245 248;
+    --secondary: 26 30 38; --secondary-foreground: 243 245 248;
+    --muted: 12 14 18; --muted-foreground: 155 161 173;
+    --accent: 34 38 47; --accent-foreground: 243 245 248;
+    --border: 51 57 68; --input: 51 57 68; --ring: 255 99 33;
+  }
+}
+.light:root {
+  --primary: 237 78 1; --primary-foreground: 255 255 255;
+  --background: 255 255 255; --foreground: 20 23 29;
+  --card: 255 255 255; --card-foreground: 20 23 29;
+  --popover: 255 255 255; --popover-foreground: 20 23 29;
+  --secondary: 243 245 248; --secondary-foreground: 20 23 29;
+  --muted: 243 245 248; --muted-foreground: 108 115 128;
+  --accent: 237 239 242; --accent-foreground: 20 23 29;
+  --border: 197 203 213; --input: 197 203 213; --ring: 237 78 1;
+}
+.dark:root {
+  --primary: 255 99 33; --primary-foreground: 255 255 255;
+  --background: 12 14 18; --foreground: 243 245 248;
+  --card: 26 30 38; --card-foreground: 243 245 248;
+  --popover: 26 30 38; --popover-foreground: 243 245 248;
+  --secondary: 26 30 38; --secondary-foreground: 243 245 248;
+  --muted: 12 14 18; --muted-foreground: 155 161 173;
+  --accent: 34 38 47; --accent-foreground: 243 245 248;
+  --border: 51 57 68; --input: 51 57 68; --ring: 255 99 33;
+}
+
