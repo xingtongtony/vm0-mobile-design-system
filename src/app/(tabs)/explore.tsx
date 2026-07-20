@@ -12,11 +12,12 @@ import {
   IconTrash,
   IconUser,
 } from '@tabler/icons-react-native';
+import { router } from 'expo-router';
 import { useState } from 'react';
-import { Text as RNText, View } from 'react-native';
+import { Platform, Text as RNText, View } from 'react-native';
 import Svg, { Defs, LinearGradient, RadialGradient, Rect, Stop } from 'react-native-svg';
 
-import { colors } from '../../theme/theme';
+import { colors } from '../../../theme/theme';
 
 import { GroupLabel, reveal, Screen, Section } from '@/components/showcase';
 import {
@@ -116,6 +117,7 @@ export default function ComponentsScreen() {
         </RNText>
       </View>
 
+
       {/* 01 Button */}
       <Section
         step="01 · BUTTON"
@@ -174,7 +176,7 @@ export default function ComponentsScreen() {
       <Section
         step="03 · CONTROLS"
         title="Toggle & Segmented"
-        desc="Toggle 64×28(On=success,契约来自 kit 绑定变量);Segmented 胶囊 50/32。"
+        desc="iOS 上是真系统控件(UISwitch / SwiftUI segmented Picker)套 VM0 token;web 为手写 fallback。"
         order={3}>
         <View className="gap-5 rounded-card bg-bg-secondary p-5">
           <View className="flex-row items-center justify-between">
@@ -305,7 +307,7 @@ export default function ComponentsScreen() {
       <Section
         step="07 · NAVIGATION"
         title="NavBar · TabBar · Sheet"
-        desc="镜像 Toolbar - Top / Tab Bar - iPhone / Sheet - iPhone。玻璃圆钮 44,TabBar 玻璃胶囊 62,Sheet 圆角 34/58 + Overlay 0.2。"
+        desc="NavBar/TabBar 为 web 展示实现(真机用 expo-router 原生);Sheet 在 iOS 是真 UISheetPresentationController(detent 0.52/0.93)。"
         order={5}>
         <View className="relative overflow-hidden rounded-card border border-separator-hairline">
           <View className="absolute inset-0">
@@ -330,7 +332,9 @@ export default function ComponentsScreen() {
               <Button
                 variant="glassProminent"
                 title="Open sheet"
-                onPress={() => setSheetOpen(true)}
+                onPress={() =>
+                  Platform.OS === 'web' ? setSheetOpen(true) : router.push('/sheet-demo')
+                }
               />
             </View>
 

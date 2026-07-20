@@ -1,6 +1,6 @@
 import '../global.css';
 
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
+import { DarkTheme, DefaultTheme, Stack, ThemeProvider } from 'expo-router';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
@@ -23,11 +23,10 @@ import {
 } from '@expo-google-fonts/jetbrains-mono';
 
 import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
 
 SplashScreen.preventAutoHideAsync();
 
-export default function TabLayout() {
+export default function RootLayout() {
   const colorScheme = useColorScheme();
   // family 名与 tailwind.config fontFamily 对齐
   const [fontsLoaded] = useFonts({
@@ -64,7 +63,20 @@ export default function TabLayout() {
   return (
     <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
       <AnimatedSplashOverlay />
-      <AppTabs />
+      <Stack screenOptions={{ headerShown: false }}>
+        <Stack.Screen name="(tabs)" />
+        {/* 原生 Sheet:真 UISheetPresentationController(detent 0.52/0.93 = kit Medium/Large) */}
+        <Stack.Screen
+          name="sheet-demo"
+          options={{
+            presentation: 'formSheet',
+            sheetAllowedDetents: [0.52, 0.93],
+            sheetGrabberVisible: true,
+            sheetCornerRadius: 34,
+            gestureEnabled: true,
+          }}
+        />
+      </Stack>
     </ThemeProvider>
   );
 }
