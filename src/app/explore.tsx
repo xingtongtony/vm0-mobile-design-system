@@ -222,9 +222,39 @@ export default function ComponentsScreen() {
         </View>
       </Section>
 
-      {/* 06 Composition */}
+      {/* 06 Glass */}
       <Section
-        step="06 · COMPOSITION"
+        step="06 · GLASS"
+        title="Liquid Glass"
+        desc="镜像 kit 的 Button - Liquid Glass(Glass / Glass Prominent)。玻璃只有浮在内容上才可见 — 白底上它本来就是隐形的;iOS 26+ 走 expo-glass-effect 真玻璃,web 用 backdrop-blur 近似。"
+        order={5}>
+        <View className="relative overflow-hidden rounded-card border border-separator-hairline">
+          {/* 彩色内容层:玻璃的折射对象 */}
+          <View className="absolute inset-0 bg-bg-secondary" />
+          <View className="absolute -left-10 -top-14 h-44 w-44 rounded-full bg-tint opacity-90" />
+          <View className="absolute left-28 top-12 h-32 w-32 rounded-full bg-link opacity-80" />
+          <View className="absolute -top-8 right-6 h-40 w-40 rounded-full bg-warning opacity-80" />
+          <View className="absolute -bottom-14 right-28 h-44 w-44 rounded-full bg-done opacity-80" />
+          <View className="absolute -left-8 bottom-0 h-32 w-32 rounded-full bg-success opacity-70" />
+
+          <View className="items-center gap-4 px-6 py-10">
+            <View className="flex-row flex-wrap items-center justify-center gap-3">
+              <Button variant="glass" size="lg" title="Glass" />
+              <Button variant="glassProminent" size="lg" title="Prominent" />
+            </View>
+            <View className="flex-row items-center justify-center gap-3">
+              <Button variant="glass" size="lg" icon={IconPlus} />
+              <Button variant="glass" icon={IconBell} />
+              <Button variant="glassProminent" icon={IconArrowRight} />
+              <Button variant="glass" size="sm" title="Small" />
+            </View>
+          </View>
+        </View>
+      </Section>
+
+      {/* 07 Composition */}
+      <Section
+        step="07 · COMPOSITION"
         title="组合示例"
         desc="Card 由 token + 上面的组件拼装 — 没有一个手写色值。"
         order={5}>

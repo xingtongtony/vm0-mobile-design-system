@@ -1,5 +1,6 @@
 import { Pressable, PressableProps } from 'react-native';
 
+import { GlassSurface } from './glass';
 import { Icon, TablerIcon } from './icon';
 import { Text } from './text';
 
@@ -11,12 +12,14 @@ import { Text } from './text';
  *  borderless=无底 tint 字;destructive 用 destructive 色;禁用字色 label-tertiary。 */
 
 const SIZE = {
-  lg: { box: 'h-[50px] px-5 gap-1.5', iconOnly: 'w-[50px]', text: 'body', weight: 'semibold', icon: 20 },
-  md: { box: 'h-[34px] px-3.5 gap-1', iconOnly: 'w-[34px]', text: 'subhead', weight: 'semibold', icon: 16 },
-  sm: { box: 'h-7 px-2.5 gap-1', iconOnly: 'w-7', text: 'subhead', weight: 'medium', icon: 14 },
+  lg: { box: 'h-[50px] gap-1.5', pad: 'px-5', iconOnly: 'w-[50px]', text: 'body', weight: 'semibold', icon: 20 },
+  md: { box: 'h-[34px] gap-1', pad: 'px-3.5', iconOnly: 'w-[34px]', text: 'subhead', weight: 'semibold', icon: 16 },
+  sm: { box: 'h-7 gap-1', pad: 'px-2.5', iconOnly: 'w-7', text: 'subhead', weight: 'medium', icon: 14 },
 } as const;
 
-export type ButtonVariant = 'prominent' | 'bordered' | 'borderless';
+/** glass / glassProminent 镜像 Figma「Button - Liquid Glass - Text/Symbol」
+ *  (Style=[Glass|Glass Prominent]);其余镜像「Button - Content Area」。 */
+export type ButtonVariant = 'prominent' | 'bordered' | 'borderless' | 'glass' | 'glassProminent';
 export type ButtonSize = keyof typeof SIZE;
 
 export interface ButtonProps extends Omit<PressableProps, 'children'> {
@@ -42,6 +45,29 @@ export function Button({
   const s = SIZE[size];
   const iconOnly = !!icon && !title;
 
+  if (variant === 'glass' || variant === 'glassProminent') {
+    const prominentGlass = variant === 'glassProminent';
+    const fgGlass = disabled ? 'tertiary' : prominentGlass ? 'onTint' : destructive ? 'destructive' : 'primary';
+    return (
+      <Pressable
+        accessibilityRole="button"
+        accessibilityState={{ disabled }}
+        disabled={disabled}
+        className={`relative flex-row items-center justify-center overflow-hidden rounded-full active:opacity-80 ${s.box} ${
+          iconOnly ? s.iconOnly : s.pad
+        } ${disabled ? 'opacity-50' : ''} ${className}`}
+        {...rest}>
+        <GlassSurface prominent={prominentGlass} />
+        {icon ? <Icon icon={icon} size={s.icon} color={fgGlass} /> : null}
+        {title ? (
+          <Text variant={s.text} weight={s.weight} color={fgGlass}>
+            {title}
+          </Text>
+        ) : null}
+      </Pressable>
+    );
+  }
+
   let box = '';
   let fg: 'onTint' | 'tint' | 'destructive' | 'tertiary';
   if (variant === 'prominent') {
@@ -63,7 +89,7 @@ export function Button({
       accessibilityState={{ disabled }}
       disabled={disabled}
       className={`flex-row items-center justify-center rounded-full ${s.box} ${
-        iconOnly ? `${s.iconOnly} px-0` : ''
+        iconOnly ? s.iconOnly : s.pad
       } ${box} ${className}`}
       {...rest}>
       {icon ? <Icon icon={icon} size={s.icon} color={fg} /> : null}

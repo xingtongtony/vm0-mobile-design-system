@@ -1,6 +1,8 @@
 export { Badge } from './badge';
 export type { BadgeProps, BadgeStatus } from './badge';
 export { Button } from './button';
+export { GlassSurface } from './glass';
+export type { GlassSurfaceProps } from './glass';
 export type { ButtonProps, ButtonSize, ButtonVariant } from './button';
 export { Icon } from './icon';
 export type { IconColor, IconProps, IconSize, TablerIcon } from './icon';
