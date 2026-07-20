@@ -20,10 +20,13 @@ export function useIconColors() {
       done: 'var(--done)',
       warning: 'var(--warning)',
       destructive: 'var(--destructive)',
+      bgElevated: 'var(--bg-elevated)',
+      overlay: 'var(--overlay)',
     };
   }
 
-  const c = colors[colorScheme === 'dark' ? 'dark' : 'light'];
+  const dark = colorScheme === 'dark';
+  const c = colors[dark ? 'dark' : 'light'];
   return {
     label: c.label,
     labelSecondary: c.labelSecondary,
@@ -35,5 +38,8 @@ export function useIconColors() {
     done: c.done,
     warning: c.warning,
     destructive: c.destructive,
+    bgElevated: c.bgElevated,
+    // kit Overlays/Default@0.2(暗色加深为近似值)
+    overlay: dark ? 'rgba(0,0,0,0.5)' : 'rgba(0,0,0,0.2)',
   };
 }

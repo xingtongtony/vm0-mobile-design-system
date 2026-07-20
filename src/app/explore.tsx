@@ -1,8 +1,12 @@
 import {
   IconArrowRight,
   IconBell,
+  IconChevronLeft,
   IconCreditCard,
+  IconFolder,
+  IconHome,
   IconPlus,
+  IconSearch,
   IconShieldCheck,
   IconSparkles,
   IconTrash,
@@ -21,8 +25,12 @@ import {
   Icon,
   ListGroup,
   ListRow,
+  NavBar,
+  NavBarButton,
   SearchField,
   Segmented,
+  Sheet,
+  TabBar,
   Text,
   TextField,
   Toggle,
@@ -91,6 +99,8 @@ export default function ComponentsScreen() {
   const [sync, setSync] = useState(false);
   const [range, setRange] = useState(1);
   const [email, setEmail] = useState('tony@vm0.ai');
+  const [tab, setTab] = useState(0);
+  const [sheetOpen, setSheetOpen] = useState(false);
 
   return (
     <Screen>
@@ -291,9 +301,85 @@ export default function ComponentsScreen() {
         </View>
       </Section>
 
-      {/* 07 Composition */}
+      {/* 07 Navigation */}
       <Section
-        step="07 · COMPOSITION"
+        step="07 · NAVIGATION"
+        title="NavBar · TabBar · Sheet"
+        desc="镜像 Toolbar - Top / Tab Bar - iPhone / Sheet - iPhone。玻璃圆钮 44,TabBar 玻璃胶囊 62,Sheet 圆角 34/58 + Overlay 0.2。"
+        order={5}>
+        <View className="relative overflow-hidden rounded-card border border-separator-hairline">
+          <View className="absolute inset-0">
+            <GlassWallpaper />
+          </View>
+
+          <View className="min-h-[440px] justify-between py-3">
+            <NavBar
+              variant="large"
+              title="Library"
+              subtitle="128 items"
+              leading={<NavBarButton icon={IconChevronLeft} />}
+              trailing={
+                <>
+                  <NavBarButton icon={IconSearch} />
+                  <NavBarButton icon={IconPlus} />
+                </>
+              }
+            />
+
+            <View className="items-center">
+              <Button
+                variant="glassProminent"
+                title="Open sheet"
+                onPress={() => setSheetOpen(true)}
+              />
+            </View>
+
+            <TabBar
+              items={[
+                { label: 'Home', icon: IconHome },
+                { label: 'Search', icon: IconSearch },
+                { label: 'Library', icon: IconFolder },
+                { label: 'Profile', icon: IconUser },
+              ]}
+              selectedIndex={tab}
+              onChange={setTab}
+            />
+          </View>
+        </View>
+
+        <Sheet visible={sheetOpen} onClose={() => setSheetOpen(false)} detent="medium">
+          <View className="gap-4 px-4">
+            <View className="items-center">
+              <Text variant="headline">分享到</Text>
+            </View>
+            <ListGroup>
+              <ListRow
+                title="信息"
+                disclosure
+                onPress={() => {}}
+                leading={<IconTile icon={IconUser} bg="bg-success" />}
+              />
+              <ListRow
+                title="邮件"
+                disclosure
+                onPress={() => {}}
+                leading={<IconTile icon={IconBell} bg="bg-link" />}
+              />
+              <ListRow
+                title="拷贝链接"
+                role="button"
+                onPress={() => setSheetOpen(false)}
+                leading={<IconTile icon={IconPlus} bg="bg-tint" />}
+              />
+            </ListGroup>
+            <Button variant="bordered" title="Cancel" onPress={() => setSheetOpen(false)} />
+          </View>
+        </Sheet>
+      </Section>
+
+      {/* 08 Composition */}
+      <Section
+        step="08 · COMPOSITION"
         title="组合示例"
         desc="Card 由 token + 上面的组件拼装 — 没有一个手写色值。"
         order={5}>
