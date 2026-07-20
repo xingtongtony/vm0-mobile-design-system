@@ -4,7 +4,7 @@ import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
 import { useFonts } from 'expo-font';
 import * as SplashScreen from 'expo-splash-screen';
 import { useEffect } from 'react';
-import { useColorScheme } from 'react-native';
+import { Platform, useColorScheme } from 'react-native';
 
 import {
   NotoSans_400Regular,
@@ -45,6 +45,19 @@ export default function TabLayout() {
   useEffect(() => {
     if (fontsLoaded) SplashScreen.hideAsync();
   }, [fontsLoaded]);
+
+  // web:主题切换的柔和过渡 + 字体平滑 + 滚动溢出跟随主题底色
+  useEffect(() => {
+    if (Platform.OS !== 'web' || typeof document === 'undefined') return;
+    const style = document.createElement('style');
+    style.textContent = [
+      'html,body{background:var(--bg)}',
+      'body{-webkit-font-smoothing:antialiased;text-rendering:optimizeLegibility}',
+      '*,*::before,*::after{transition:background-color .25s ease,color .2s ease,border-color .25s ease}',
+    ].join('\n');
+    document.head.appendChild(style);
+    return () => style.remove();
+  }, []);
 
   if (!fontsLoaded) return null;
 

@@ -28,6 +28,21 @@ module.exports = {
         footnote: ['13px', '18px'], caption1: ['12px', '16px'], caption2: ['11px', '13px'], mono: ['14px', '20px'],
       },
       borderRadius: { xs: '4px', sm: '6px', md: '8px', lg: '12px', card: '16px', xl: '20px', full: '999px' },
+      keyframes: {
+        fadeUp: {
+          from: { opacity: '0', transform: 'translateY(14px)' },
+          to: { opacity: '1', transform: 'translateY(0)' },
+        },
+      },
+      // 入场 stagger:fade-up-N = 延迟 N*80ms(web 展示动效;native 无副作用)
+      animation: {
+        'fade-up': 'fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) both',
+        'fade-up-1': 'fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.08s both',
+        'fade-up-2': 'fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.16s both',
+        'fade-up-3': 'fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.24s both',
+        'fade-up-4': 'fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.32s both',
+        'fade-up-5': 'fadeUp 0.6s cubic-bezier(0.16,1,0.3,1) 0.4s both',
+      },
     },
   },
   plugins: [],

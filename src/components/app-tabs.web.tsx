@@ -1,3 +1,4 @@
+import { IconDeviceDesktop, IconMoon, IconSunHigh } from '@tabler/icons-react-native';
 import {
   Tabs,
   TabList,
@@ -6,14 +7,9 @@ import {
   TabTriggerSlotProps,
   TabListProps,
 } from 'expo-router/ui';
-import { SymbolView } from 'expo-symbols';
-import { Pressable, useColorScheme, View, StyleSheet } from 'react-native';
+import { Pressable, Text, View } from 'react-native';
 
-import { ExternalLink } from './external-link';
-import { ThemedText } from './themed-text';
-import { ThemedView } from './themed-view';
-
-import { Colors, MaxContentWidth, Spacing } from '@/constants/theme';
+import { ThemePref, useThemePref } from '@/hooks/use-theme-pref';
 
 export default function AppTabs() {
   return (
@@ -22,10 +18,10 @@ export default function AppTabs() {
       <TabList asChild>
         <CustomTabList>
           <TabTrigger name="home" href="/" asChild>
-            <TabButton>Home</TabButton>
+            <TabButton>Foundations</TabButton>
           </TabTrigger>
           <TabTrigger name="explore" href="/explore" asChild>
-            <TabButton>Explore</TabButton>
+            <TabButton>Components</TabButton>
           </TabTrigger>
         </CustomTabList>
       </TabList>
@@ -35,81 +31,72 @@ export default function AppTabs() {
 
 export function TabButton({ children, isFocused, ...props }: TabTriggerSlotProps) {
   return (
-    <Pressable {...props} style={({ pressed }) => pressed && styles.pressed}>
-      <ThemedView
-        type={isFocused ? 'backgroundSelected' : 'backgroundElement'}
-        style={styles.tabButtonView}>
-        <ThemedText type="small" themeColor={isFocused ? 'text' : 'textSecondary'}>
+    <Pressable {...props} className="active:opacity-70">
+      <View className={`rounded-full px-3 py-1.5 ${isFocused ? 'bg-fill-3' : ''}`}>
+        <Text
+          className={`text-footnote ${
+            isFocused ? 'font-sans-semibold text-label' : 'font-sans-medium text-label-secondary'
+          }`}>
           {children}
-        </ThemedText>
-      </ThemedView>
+        </Text>
+      </View>
     </Pressable>
   );
 }
 
-export function CustomTabList(props: TabListProps) {
-  const scheme = useColorScheme();
-  const colors = Colors[scheme === 'unspecified' ? 'light' : scheme];
+const PREFS: { key: ThemePref; Icon: typeof IconSunHigh }[] = [
+  { key: 'system', Icon: IconDeviceDesktop },
+  { key: 'light', Icon: IconSunHigh },
+  { key: 'dark', Icon: IconMoon },
+];
 
+function ThemeToggle() {
+  const [pref, setPref] = useThemePref();
   return (
-    <View {...props} style={styles.tabListContainer}>
-      <ThemedView type="backgroundElement" style={styles.innerContainer}>
-        <ThemedText type="smallBold" style={styles.brandText}>
-          Expo Starter
-        </ThemedText>
-
-        {props.children}
-
-        <ExternalLink href="https://docs.expo.dev" asChild>
-          <Pressable style={styles.externalPressable}>
-            <ThemedText type="link">Docs</ThemedText>
-            <SymbolView
-              tintColor={colors.text}
-              name={{ ios: 'arrow.up.right.square', web: 'link' }}
-              size={12}
-            />
-          </Pressable>
-        </ExternalLink>
-      </ThemedView>
+    <View className="flex-row rounded-full bg-fill-3 p-[3px]">
+      {PREFS.map(({ key, Icon }) => (
+        <Pressable
+          key={key}
+          onPress={() => setPref(key)}
+          className={`h-7 w-7 items-center justify-center rounded-full ${
+            pref === key ? 'bg-bg-elevated shadow-sm' : ''
+          }`}>
+          <Icon
+            size={14}
+            color={pref === key ? ('var(--label)' as never) : ('var(--label-tertiary)' as never)}
+          />
+        </Pressable>
+      ))}
     </View>
   );
 }
 
-const styles = StyleSheet.create({
-  tabListContainer: {
-    position: 'absolute',
-    width: '100%',
-    padding: Spacing.three,
-    justifyContent: 'center',
-    alignItems: 'center',
-    flexDirection: 'row',
-  },
-  innerContainer: {
-    paddingVertical: Spacing.two,
-    paddingHorizontal: Spacing.five,
-    borderRadius: Spacing.five,
-    flexDirection: 'row',
-    alignItems: 'center',
-    flexGrow: 1,
-    gap: Spacing.two,
-    maxWidth: MaxContentWidth,
-  },
-  brandText: {
-    marginRight: 'auto',
-  },
-  pressed: {
-    opacity: 0.7,
-  },
-  tabButtonView: {
-    paddingVertical: Spacing.one,
-    paddingHorizontal: Spacing.three,
-    borderRadius: Spacing.three,
-  },
-  externalPressable: {
-    flexDirection: 'row',
-    justifyContent: 'center',
-    alignItems: 'center',
-    gap: Spacing.one,
-    marginLeft: Spacing.three,
-  },
-});
+export function CustomTabList(props: TabListProps) {
+  return (
+    <View
+      {...props}
+      className="absolute w-full flex-row items-center justify-center p-4"
+      style={{ pointerEvents: 'box-none' } as never}>
+      <View
+        className="w-full max-w-[720px] flex-row items-center gap-1 rounded-full border border-separator-hairline px-3 py-2"
+        style={
+          {
+            backgroundColor: 'color-mix(in srgb, var(--bg) 78%, transparent)',
+            backdropFilter: 'saturate(180%) blur(20px)',
+            WebkitBackdropFilter: 'saturate(180%) blur(20px)',
+          } as never
+        }>
+        <View className="mr-auto flex-row items-center gap-2 pl-1">
+          <View className="h-2.5 w-2.5 rounded-full bg-tint" />
+          <Text className="hidden font-sans-bold text-footnote tracking-tight text-label min-[440px]:flex">VM0</Text>
+        </View>
+
+        {props.children}
+
+        <View className="ml-1">
+          <ThemeToggle />
+        </View>
+      </View>
+    </View>
+  );
+}

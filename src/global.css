@@ -34,6 +34,17 @@
     --subtle-success: rgba(52,179,104,0.18); --subtle-destructive: rgba(255,92,92,0.18); --subtle-done: rgba(154,140,240,0.18); --subtle-warning: rgba(232,145,46,0.18); --subtle-link: rgba(91,155,240,0.18);
   }
 }
+/* 手动强制亮色:覆盖系统暗色偏好(写在 media 之后保证优先) */
+.light:root {
+  --tint: #ed4e01; --tint-pressed: #de3f00; --tint-subtle: #fde7df; --on-tint: #ffffff;
+  --bg: #ffffff; --bg-elevated: #ffffff; --bg-grouped: #f3f5f8; --bg-secondary: #f3f5f8; --bg-tertiary: #ffffff;
+  --label: #14171d; --label-secondary: rgba(60,67,81,0.6); --label-tertiary: rgba(60,67,81,0.3); --label-quaternary: rgba(60,67,81,0.18);
+  --fill-1: rgba(120,129,146,0.2); --fill-2: rgba(120,129,146,0.16); --fill-3: rgba(120,129,146,0.12); --fill-4: rgba(120,129,146,0.08);
+  --separator: #c5cbd5; --separator-hairline: rgba(20,23,29,0.12);
+  --success: #2a7a4b; --destructive: #ef4444; --done: #6a5acd; --link: #2e6fc2; --warning: #b35a00;
+  --subtle-success: #e4f1ea; --subtle-destructive: #fdecec; --subtle-done: #ece9fa; --subtle-warning: #fbeedd; --subtle-link: #e5eef9;
+}
+
 /* 手动切换:根节点加 .dark */
 .dark:root {
   --tint: #ff6321; --tint-pressed: #ff7a45; --tint-subtle: rgba(255,99,33,0.16); --on-tint: #ffffff;
