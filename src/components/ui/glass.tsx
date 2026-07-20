@@ -57,7 +57,10 @@ export function GlassSurface({ prominent = false, borderRadius = 999, style }: G
           WebkitBackdropFilter: 'blur(18px) saturate(180%)',
           borderWidth: 1,
           borderColor: prominent ? 'rgba(255,255,255,0.45)' : 'var(--glass-border)',
-          boxShadow: '0 8px 24px rgba(0,0,0,0.10)',
+          // 定义层:柔影 + 外圈暗色发丝环 + 顶部高光/底部收暗(对应 kit 的多层填充与 inner shadow)
+          boxShadow: prominent
+            ? '0 8px 24px rgba(0,0,0,0.16), inset 0 1px 1px rgba(255,255,255,0.5)'
+            : '0 8px 24px rgba(0,0,0,0.12), 0 0 0 1px var(--glass-ring), inset 0 1px 1px rgba(255,255,255,0.85), inset 0 -1px 1px rgba(0,0,0,0.06)',
         } as unknown as ViewStyle)
       : { backgroundColor: prominent ? c.tint : 'rgba(127,132,145,0.4)' };
 
