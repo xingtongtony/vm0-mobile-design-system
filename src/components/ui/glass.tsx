@@ -52,9 +52,7 @@ export function GlassSurface({ prominent = false, borderRadius = 999, style }: G
   const fallback: ViewStyle =
     Platform.OS === 'web'
       ? ({
-          backgroundColor: prominent
-            ? 'color-mix(in srgb, var(--tint) 78%, transparent)'
-            : 'var(--glass-bg)',
+          backgroundColor: prominent ? 'var(--glass-tint)' : 'var(--glass-bg)',
           backdropFilter: 'blur(18px) saturate(180%)',
           WebkitBackdropFilter: 'blur(18px) saturate(180%)',
           borderWidth: 1,

@@ -81,7 +81,7 @@ export function CustomTabList(props: TabListProps) {
         className="w-full max-w-[720px] flex-row items-center gap-1 rounded-full border border-separator-hairline px-3 py-2"
         style={
           {
-            backgroundColor: 'color-mix(in srgb, var(--bg) 78%, transparent)',
+            backgroundColor: 'var(--bar-bg)',
             backdropFilter: 'saturate(180%) blur(20px)',
             WebkitBackdropFilter: 'saturate(180%) blur(20px)',
           } as never

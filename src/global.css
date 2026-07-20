@@ -20,7 +20,7 @@
   --separator: #c5cbd5; --separator-hairline: rgba(20,23,29,0.12);
   --success: #2a7a4b; --destructive: #ef4444; --done: #6a5acd; --link: #2e6fc2; --warning: #b35a00;
   --subtle-success: #e4f1ea; --subtle-destructive: #fdecec; --subtle-done: #ece9fa; --subtle-warning: #fbeedd; --subtle-link: #e5eef9;
-  --glass-bg: rgba(255,255,255,0.5); --glass-border: rgba(255,255,255,0.65);
+  --glass-bg: rgba(255,255,255,0.5); --glass-border: rgba(255,255,255,0.65); --glass-tint: rgba(237,78,1,0.82); --bar-bg: rgba(255,255,255,0.78);
 }
 
 /* ===== VM0 semantic tokens — DARK (系统偏好) ===== */
@@ -33,12 +33,12 @@
     --separator: #333944; --separator-hairline: rgba(231,235,245,0.17);
     --success: #34b368; --destructive: #ff5c5c; --done: #9a8cf0; --link: #5b9bf0; --warning: #e8912e;
     --subtle-success: rgba(52,179,104,0.18); --subtle-destructive: rgba(255,92,92,0.18); --subtle-done: rgba(154,140,240,0.18); --subtle-warning: rgba(232,145,46,0.18); --subtle-link: rgba(91,155,240,0.18);
-    --glass-bg: rgba(30,34,42,0.45); --glass-border: rgba(255,255,255,0.16);
+    --glass-bg: rgba(30,34,42,0.45); --glass-border: rgba(255,255,255,0.16); --glass-tint: rgba(255,99,33,0.82); --bar-bg: rgba(12,14,18,0.75);
   }
 }
 /* 手动强制亮色:覆盖系统暗色偏好(写在 media 之后保证优先) */
 .light:root {
-  --glass-bg: rgba(255,255,255,0.5); --glass-border: rgba(255,255,255,0.65);
+  --glass-bg: rgba(255,255,255,0.5); --glass-border: rgba(255,255,255,0.65); --glass-tint: rgba(237,78,1,0.82); --bar-bg: rgba(255,255,255,0.78);
   --tint: #ed4e01; --tint-pressed: #de3f00; --tint-subtle: #fde7df; --on-tint: #ffffff;
   --bg: #ffffff; --bg-elevated: #ffffff; --bg-grouped: #f3f5f8; --bg-secondary: #f3f5f8; --bg-tertiary: #ffffff;
   --label: #14171d; --label-secondary: rgba(60,67,81,0.6); --label-tertiary: rgba(60,67,81,0.3); --label-quaternary: rgba(60,67,81,0.18);
@@ -50,7 +50,7 @@
 
 /* 手动切换:根节点加 .dark */
 .dark:root {
-  --glass-bg: rgba(30,34,42,0.45); --glass-border: rgba(255,255,255,0.16);
+  --glass-bg: rgba(30,34,42,0.45); --glass-border: rgba(255,255,255,0.16); --glass-tint: rgba(255,99,33,0.82); --bar-bg: rgba(12,14,18,0.75);
   --tint: #ff6321; --tint-pressed: #ff7a45; --tint-subtle: rgba(255,99,33,0.16); --on-tint: #ffffff;
   --bg: #0c0e12; --bg-elevated: #1a1e26; --bg-grouped: #0c0e12; --bg-secondary: #1a1e26; --bg-tertiary: #22262f;
   --label: #f3f5f8; --label-secondary: rgba(231,235,245,0.7); --label-tertiary: rgba(231,235,245,0.3); --label-quaternary: rgba(231,235,245,0.16);

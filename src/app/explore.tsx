@@ -10,6 +10,9 @@ import {
 } from '@tabler/icons-react-native';
 import { useState } from 'react';
 import { Text as RNText, View } from 'react-native';
+import Svg, { Defs, LinearGradient, RadialGradient, Rect, Stop } from 'react-native-svg';
+
+import { colors } from '../../theme/theme';
 
 import { GroupLabel, reveal, Screen, Section } from '@/components/showcase';
 import {
@@ -42,6 +45,44 @@ function Progress({ value }: { value: number }) {
         className="h-full rounded-full bg-tint transition-all duration-700"
       />
     </View>
+  );
+}
+
+/** Apple 式 glass 展示壁纸 — 连续柔和渐变(SwiftUI 文档同款思路),
+ *  色相取自 theme token(demo 艺术层,非 UI 元素)。 */
+function GlassWallpaper() {
+  const c = colors.light;
+  return (
+    <Svg width="100%" height="100%" viewBox="0 0 720 300" preserveAspectRatio="xMidYMid slice">
+      <Defs>
+        <LinearGradient id="wp-base" x1="0" y1="0" x2="1" y2="1">
+          <Stop offset="0" stopColor="#f7dcc9" />
+          <Stop offset="0.45" stopColor="#eee3ee" />
+          <Stop offset="1" stopColor="#ccdff5" />
+        </LinearGradient>
+        <RadialGradient id="wp-tint" cx="0.16" cy="0.18" r="0.55">
+          <Stop offset="0" stopColor={c.tint} stopOpacity="0.75" />
+          <Stop offset="1" stopColor={c.tint} stopOpacity="0" />
+        </RadialGradient>
+        <RadialGradient id="wp-link" cx="0.42" cy="0.95" r="0.6">
+          <Stop offset="0" stopColor={c.link} stopOpacity="0.65" />
+          <Stop offset="1" stopColor={c.link} stopOpacity="0" />
+        </RadialGradient>
+        <RadialGradient id="wp-done" cx="0.85" cy="0.75" r="0.55">
+          <Stop offset="0" stopColor={c.done} stopOpacity="0.6" />
+          <Stop offset="1" stopColor={c.done} stopOpacity="0" />
+        </RadialGradient>
+        <RadialGradient id="wp-warm" cx="0.72" cy="0.08" r="0.45">
+          <Stop offset="0" stopColor={c.warning} stopOpacity="0.55" />
+          <Stop offset="1" stopColor={c.warning} stopOpacity="0" />
+        </RadialGradient>
+      </Defs>
+      <Rect width="720" height="300" fill="url(#wp-base)" />
+      <Rect width="720" height="300" fill="url(#wp-tint)" />
+      <Rect width="720" height="300" fill="url(#wp-link)" />
+      <Rect width="720" height="300" fill="url(#wp-done)" />
+      <Rect width="720" height="300" fill="url(#wp-warm)" />
+    </Svg>
   );
 }
 
@@ -229,24 +270,22 @@ export default function ComponentsScreen() {
         desc="镜像 kit 的 Button - Liquid Glass(Glass / Glass Prominent)。玻璃只有浮在内容上才可见 — 白底上它本来就是隐形的;iOS 26+ 走 expo-glass-effect 真玻璃,web 用 backdrop-blur 近似。"
         order={5}>
         <View className="relative overflow-hidden rounded-card border border-separator-hairline">
-          {/* 彩色内容层:玻璃的折射对象 */}
-          <View className="absolute inset-0 bg-bg-secondary" />
-          <View className="absolute -left-10 -top-14 h-44 w-44 rounded-full bg-tint opacity-90" />
-          <View className="absolute left-28 top-12 h-32 w-32 rounded-full bg-link opacity-80" />
-          <View className="absolute -top-8 right-6 h-40 w-40 rounded-full bg-warning opacity-80" />
-          <View className="absolute -bottom-14 right-28 h-44 w-44 rounded-full bg-done opacity-80" />
-          <View className="absolute -left-8 bottom-0 h-32 w-32 rounded-full bg-success opacity-70" />
+          {/* 壁纸层:玻璃的折射对象(Apple 文档同款展示方式) */}
+          <View className="absolute inset-0">
+            <GlassWallpaper />
+          </View>
 
-          <View className="items-center gap-4 px-6 py-10">
-            <View className="flex-row flex-wrap items-center justify-center gap-3">
-              <Button variant="glass" size="lg" title="Glass" />
-              <Button variant="glassProminent" size="lg" title="Prominent" />
-            </View>
-            <View className="flex-row items-center justify-center gap-3">
+          <View className="items-center gap-6 px-6 py-14">
+            {/* 玻璃工具条:icon-only 集群 */}
+            <View className="flex-row items-center gap-3">
               <Button variant="glass" size="lg" icon={IconPlus} />
-              <Button variant="glass" icon={IconBell} />
-              <Button variant="glassProminent" icon={IconArrowRight} />
-              <Button variant="glass" size="sm" title="Small" />
+              <Button variant="glass" size="lg" icon={IconBell} />
+              <Button variant="glass" size="lg" icon={IconUser} />
+            </View>
+            {/* 主按钮对:secondary glass + prominent CTA */}
+            <View className="flex-row flex-wrap items-center justify-center gap-3">
+              <Button variant="glass" size="lg" title="Not now" />
+              <Button variant="glassProminent" size="lg" title="Get started" icon={IconArrowRight} />
             </View>
           </View>
         </View>

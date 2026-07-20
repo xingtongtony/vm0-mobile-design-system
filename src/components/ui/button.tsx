@@ -1,4 +1,4 @@
-import { Pressable, PressableProps } from 'react-native';
+import { Pressable, PressableProps, View } from 'react-native';
 
 import { GlassSurface } from './glass';
 import { Icon, TablerIcon } from './icon';
@@ -58,7 +58,12 @@ export function Button({
         } ${disabled ? 'opacity-50' : ''} ${className}`}
         {...rest}>
         <GlassSurface prominent={prominentGlass} />
-        {icon ? <Icon icon={icon} size={s.icon} color={fgGlass} /> : null}
+        {/* RNW 中 static 的 SVG 会被 absolute 玻璃层盖住,包一层 relative 提到玻璃之上 */}
+        {icon ? (
+          <View className="relative">
+            <Icon icon={icon} size={s.icon} color={fgGlass} />
+          </View>
+        ) : null}
         {title ? (
           <Text variant={s.text} weight={s.weight} color={fgGlass}>
             {title}
