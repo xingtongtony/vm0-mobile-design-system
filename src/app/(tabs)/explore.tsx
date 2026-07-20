@@ -115,6 +115,13 @@ export default function ComponentsScreen() {
         <RNText className="max-w-[560px] font-sans text-body leading-6 text-label-secondary">
           src/components/ui — API 与 Figma 组件变体 1:1 镜像,尺寸与色彩契约直接读自组件的绑定变量。
         </RNText>
+        <View className="flex-row">
+          <Button
+            variant="bordered"
+            title="gluestack × VM0 试验场 →"
+            onPress={() => router.push('/gs-probe')}
+          />
+        </View>
       </View>
 
 

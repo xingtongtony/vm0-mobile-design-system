@@ -3,6 +3,8 @@ import { useState } from 'react';
 import { ScrollView, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
+import { router } from 'expo-router';
+
 import { Button, ButtonText } from '@/components/gluestack/button';
 import {
   Checkbox,
@@ -42,7 +44,12 @@ export default function GsProbe() {
     <View className="flex-1 bg-bg">
       <SafeAreaView className="flex-1" edges={['top']}>
         <ScrollView contentContainerClassName="gap-7 p-5 pt-16">
-          <Text variant="title2">gluestack × VM0 tokens</Text>
+          <View className="flex-row items-center justify-between">
+            <Text variant="title2">gluestack × VM0 tokens</Text>
+            <Button variant="ghost" size="sm" onPress={() => router.back()}>
+              <ButtonText>关闭</ButtonText>
+            </Button>
+          </View>
 
           <Section label="button · variant">
             <View className="flex-row flex-wrap items-center gap-3">
