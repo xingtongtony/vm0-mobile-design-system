@@ -1,0 +1,25 @@
+# deps / build
+node_modules/
+.expo/
+dist/
+web-build/
+*.log
+
+# native
+ios/Pods/
+android/.gradle/
+*.keystore
+
+# env / secrets
+.env
+.env.*
+!.env.example
+
+# os / editor
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+
+# misc
+*.orig
