@@ -2,12 +2,14 @@ import { Pressable, View } from 'react-native';
 
 import { Text } from './text';
 
-/** VM0 Segmented — 镜像 Figma「Segmented Control」:胶囊容器,
- *  Size=[Large|Small] → lg(50)/sm(32),选中项 bg-elevated + 阴影。 */
+/** VM0 Segmented — kit-exact 手写(全平台统一):
+ *  Figma「Segmented Control」= 全胶囊容器(r=100,iOS 27 风格),内缩 2,
+ *  Size=[Large|Small] → 容器 50/32、选项 46/28(胶囊),选中项 bg-elevated + 阴影。
+ *  注:iOS 26 系统 segmented 是旧圆角矩形样式,与 kit 不符,故不走系统实现。 */
 
 const SIZE = {
-  lg: { box: 'h-[50px]', option: 'h-[44px]' },
-  sm: { box: 'h-8', option: 'h-[26px]' },
+  lg: { box: 'h-[50px]', option: 'h-[46px]' },
+  sm: { box: 'h-8', option: 'h-7' },
 } as const;
 
 export interface SegmentedProps {
@@ -28,7 +30,7 @@ export function Segmented({
   const s = SIZE[size];
   return (
     <View
-      className={`flex-row items-center rounded-full bg-fill-3 p-[3px] ${s.box} ${
+      className={`flex-row items-center rounded-full bg-fill-3 p-[2px] ${s.box} ${
         disabled ? 'opacity-40' : ''
       }`}>
       {options.map((label, i) => {

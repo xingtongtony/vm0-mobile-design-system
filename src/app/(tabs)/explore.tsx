@@ -176,7 +176,7 @@ export default function ComponentsScreen() {
       <Section
         step="03 · CONTROLS"
         title="Toggle & Segmented"
-        desc="iOS 上是真系统控件(UISwitch / SwiftUI segmented Picker)套 VM0 token;web 为手写 fallback。"
+        desc="kit-exact 手写:kit 是 iOS 27 风格(Toggle 胶囊 knob 38×24、Segmented 全胶囊),26 系统件样式不符,故全平台统一自绘。"
         order={3}>
         <View className="gap-5 rounded-card bg-bg-secondary p-5">
           <View className="flex-row items-center justify-between">

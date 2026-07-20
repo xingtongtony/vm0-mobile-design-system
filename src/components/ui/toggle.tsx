@@ -1,7 +1,10 @@
 import { Pressable, View } from 'react-native';
 
-/** VM0 Toggle — 镜像 Figma「Toggle - Switch」:64×28 胶囊,knob 24,
- *  On=success 绿(kit 绑 Accents/Green),Off=label-tertiary,禁用降透明度。 */
+/** VM0 Toggle — kit-exact 手写(全平台统一):
+ *  Figma「Toggle - Switch」= 64×28 胶囊轨道 + 38×24 胶囊形 knob(iOS 27 风格,
+ *  knob 不是圆!),行程 22;On=success(kit 绑 Accents/Green),Off=label-tertiary。
+ *  注:iOS 26 系统 UISwitch 是旧样式(51×31 圆 knob),与 kit 的 27 风格不符,
+ *  所以此件不走系统实现;按压拉伸态属 P2。 */
 
 export interface ToggleProps {
   value: boolean;
@@ -21,8 +24,8 @@ export function Toggle({ value, onValueChange, disabled = false }: ToggleProps) 
         disabled ? 'opacity-40' : ''
       }`}>
       <View
-        style={{ transform: [{ translateX: value ? 36 : 0 }] }}
-        className="h-6 w-6 rounded-full bg-white shadow-sm transition-transform duration-200"
+        style={{ transform: [{ translateX: value ? 22 : 0 }] }}
+        className="h-6 w-[38px] rounded-full bg-white shadow-sm transition-transform duration-200"
       />
     </Pressable>
   );
