@@ -21,6 +21,26 @@ struct VMIcon: View {
     }
 }
 
+// Zero 头像 —— 官方手绘吉祥物(源自 vm0-marketing / vm0 desktop 的 zero-avatar.png)
+// 透明底插画,坐在自适应的 tintSubtle 圆角底上;缺图时回退小笑脸。
+struct ZeroAvatar: View {
+    var size: CGFloat = 40
+
+    var body: some View {
+        Group {
+            if let path = Bundle.main.path(forResource: "zero-avatar", ofType: "png"),
+               let ui = UIImage(contentsOfFile: path) {
+                Image(uiImage: ui).resizable().scaledToFit()
+            } else {
+                VMIcon(name: "mood-smile", size: size * 0.55, color: .white)
+            }
+        }
+        .frame(width: size, height: size)
+        .background(Color.vm.tintSubtle)
+        .clipShape(RoundedRectangle(cornerRadius: size * 0.275, style: .continuous))
+    }
+}
+
 struct ChatView: View {
     @State private var mode = 0
     @State private var input = ""
@@ -92,10 +112,7 @@ struct ChatView: View {
 
     private var assistantBlock: some View {
         VStack(alignment: .leading, spacing: 16) {
-            RoundedRectangle(cornerRadius: 11, style: .continuous)
-                .fill(Color.vm.tint)
-                .frame(width: 40, height: 40)
-                .overlay(VMIcon(name: "mood-smile", size: 22, color: .white))
+            ZeroAvatar(size: 40)
 
             Group {
                 Text("The workspace was wiped between turns — I need to re-clone and re-apply the changes.")
