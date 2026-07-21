@@ -5,7 +5,10 @@
 
 ## 内容
 - `VM0App.swift` — app 入口
-- `ChatView.swift` — 聊天页(原生 Picker segmented、Liquid Glass、Tabler 图标、VM0 token 色)
+- `VMTheme.swift` — 全套 token(明暗双模式色 + Noto Sans 字阶 + radius/space)
+- `ChatModels.swift` — ChatMessage / ChatThread(POC 假数据)
+- `ChatView.swift` — 聊天页(chat-first:threads 抽屉 / 新建、空态模板 tile、Menu composer、Liquid Glass、Tabler 图标、VM0 token 色)
+- `ThreadsView.swift` — 左侧 threads 抽屉(原生 List/searchable/swipeActions,照桌面模型)
 - `makeicons.swift` — Tabler SVG → 模板 PNG 图标管线(亮度转 alpha + 固定窗口居中裁剪)
 - `*.png` — Tabler 图标(bundle 资源)
 - `COMPONENTS.md` — 组件清单与 native-first 决策记录
@@ -17,12 +20,12 @@
 ```
 `build.sh` 做了:编译 → 打包 `VM0Chat.app`(含 `Info.plist`,**没有它会报 `Missing bundle ID`**)→ `simctl install` + `launch`。
 
-手动等价命令:
+手动等价命令(app 源 = 除 `makeicons.swift` 外的所有 `.swift`):
 ```bash
 export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
 SDK=$(xcrun --sdk iphonesimulator --show-sdk-path)
 xcrun --sdk iphonesimulator swiftc -target arm64-apple-ios26.0-simulator -sdk "$SDK" \
-  VM0App.swift VMTheme.swift ChatView.swift -o VM0Chat
+  VM0App.swift VMTheme.swift ChatModels.swift ChatView.swift ThreadsView.swift -o VM0Chat
 mkdir -p VM0Chat.app && cp VM0Chat *.png Info.plist VM0Chat.app/
 xcrun simctl install booted VM0Chat.app && xcrun simctl launch booted ai.vm0.chatpoc
 ```

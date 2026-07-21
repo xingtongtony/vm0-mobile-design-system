@@ -41,57 +41,119 @@ struct ZeroAvatar: View {
     }
 }
 
+// 运行中指示点 —— 品牌橙,thread 行 / assistant running 行共用
+struct RunningDot: View {
+    var size: CGFloat = 7
+    var body: some View { Circle().fill(Color.vm.tint).frame(width: size, height: size) }
+}
+
 struct ChatView: View {
-    @State private var mode = 0
+    @State private var messages: [ChatMessage] = ChatMessage.sampleThread
     @State private var input = ""
+    @State private var showThreads = false
+    @State private var threadTitle = "Workspace bug triage"
+
+    // 空态 starter 模板(解决"用户不知道 Zero 能干嘛")
+    private let templates = [
+        "Summarize my inbox",
+        "Triage GitHub issues",
+        "Draft a standup update",
+        "Review a pull request",
+    ]
 
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 22) {
-                userBubble("这个 workspace 的 bug 帮我看下")
-                assistantLine("好的,我先检查一下工作区状态。")
-                userBubble("继续")
-                assistantBlock
+            if messages.isEmpty {
+                emptyState
+            } else {
+                VStack(alignment: .leading, spacing: 22) {
+                    ForEach(messages) { messageView($0) }
+                }
+                .padding(.horizontal, 20)
+                .padding(.top, 12)
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 12)
         }
-        .defaultScrollAnchor(.bottom)  // 聊天默认停在最新消息 —— 内容自然垫到玻璃条下
-        // 内容滚到玻璃条底下(原生 nav bar 模式)—— 玻璃折射滚过的内容
+        .defaultScrollAnchor(.bottom)
         .safeAreaInset(edge: .top) { topBar }
         .safeAreaInset(edge: .bottom) { inputBar }
-        .background(Color.vm.bgGrouped.ignoresSafeArea())  // 纯色底,保持简洁
+        .background(Color.vm.bgGrouped.ignoresSafeArea())
+        .sheet(isPresented: $showThreads) {
+            ThreadsView(
+                onSelect: { t in
+                    threadTitle = t.title
+                    messages = ChatMessage.sampleThread   // POC:任选一条都载入同一段样例
+                },
+                onNew: { startNewChat() }
+            )
+        }
     }
 
-    // 顶栏:玻璃圆钮 · 原生 Segmented · 玻璃圆钮
+    // 顶栏:threads 抽屉 · 当前标题 · 新建(照桌面:左找我的东西 / 右开新的)
     private var topBar: some View {
         HStack {
-            glassCircle("user")
+            glassCircle("list") { showThreads = true }
             Spacer()
-            // 原生 SwiftUI segmented(不定制;自带滑动动画,高度用系统默认)
-            Picker("", selection: $mode) {
-                Text("Agent").tag(0)
-                Text("Task").tag(1)
-            }
-            .pickerStyle(.segmented)
-            .frame(width: 200)
+            Text(messages.isEmpty ? "New chat" : threadTitle)
+                .font(.vm.headline)
+                .foregroundStyle(Color.vm.label)
+                .lineLimit(1)
             Spacer()
-            glassCircle("pin")
+            glassCircle("plus") { startNewChat() }
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
     }
 
     // header button = 真 Liquid Glass(iOS 26 .glassEffect)
-    private func glassCircle(_ icon: String) -> some View {
-        VMIcon(name: icon, size: 19, color: .vm.label)
-            .frame(width: 40, height: 40)
-            .glassEffect(.regular.interactive(), in: .circle)
+    private func glassCircle(_ icon: String, action: @escaping () -> Void) -> some View {
+        Button(action: action) {
+            VMIcon(name: icon, size: 19, color: .vm.label)
+                .frame(width: 40, height: 40)
+                .glassEffect(.regular.interactive(), in: .circle)
+        }
+        .buttonStyle(.plain)
+    }
+
+    // 空态:Zero 头像 + 招呼 + 模板 tile(点一下直接发)
+    private var emptyState: some View {
+        VStack(spacing: 24) {
+            ZeroAvatar(size: 64)
+            Text("How can I help, Tong?")
+                .font(.vm.title2)
+                .foregroundStyle(Color.vm.label)
+            LazyVGrid(
+                columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)],
+                spacing: 10
+            ) {
+                ForEach(templates, id: \.self) { t in
+                    Button { send(t) } label: {
+                        Text(t)
+                            .font(.vm.subhead)
+                            .foregroundStyle(Color.vm.label)
+                            .multilineTextAlignment(.leading)
+                            .frame(maxWidth: .infinity, minHeight: 62, alignment: .topLeading)
+                            .padding(14)
+                            .background(Color.vm.fill3, in: RoundedRectangle(cornerRadius: VM.radius.lg, style: .continuous))
+                    }
+                    .buttonStyle(.plain)
+                }
+            }
+        }
+        .frame(maxWidth: .infinity)
+        .padding(.horizontal, 20)
+        .padding(.top, 72)
+    }
+
+    @ViewBuilder private func messageView(_ m: ChatMessage) -> some View {
+        switch m.role {
+        case .user: userBubble(m.text)
+        case .assistant: assistantBlock(m)
+        }
     }
 
     private func userBubble(_ text: String) -> some View {
         HStack {
-            Spacer()
+            Spacer(minLength: 40)
             Text(text)
                 .font(.vm.body)
                 .foregroundStyle(Color.vm.label)
@@ -101,44 +163,35 @@ struct ChatView: View {
         }
     }
 
-    private func assistantLine(_ text: String) -> some View {
-        HStack {
-            Text(text)
-                .font(.vm.body)
-                .foregroundStyle(Color.vm.label)
-            Spacer()
-        }
-    }
-
-    private var assistantBlock: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            ZeroAvatar(size: 40)
-
-            Group {
-                Text("The workspace was wiped between turns — I need to re-clone and re-apply the changes.")
-                Text("Now I'll re-apply the changes — the JSX edit and the CSS rule.")
-                Text("Now I'll regenerate firewalls and run lint, type-check, and the affected tests.")
-                Text("Pushed to PR #11357. Changes:")
+    private func assistantBlock(_ m: ChatMessage) -> some View {
+        HStack(alignment: .top, spacing: 12) {
+            if m.groupStart {
+                ZeroAvatar(size: 32)
+            } else {
+                Color.clear.frame(width: 32, height: 0)
             }
-            .font(.vm.body)
-            .foregroundStyle(Color.vm.label)
-            .fixedSize(horizontal: false, vertical: true)
+            VStack(alignment: .leading, spacing: 14) {
+                Text(m.text)
+                    .font(.vm.body)
+                    .foregroundStyle(Color.vm.label)
+                    .fixedSize(horizontal: false, vertical: true)
 
-            HStack(spacing: 10) {
-                chip("zero-stack-card")
-                chip("mobile-stack-list.tsx")
+                if !m.chips.isEmpty {
+                    HStack(spacing: 10) {
+                        ForEach(m.chips, id: \.self) { chip($0) }
+                    }
+                }
+                if m.running {
+                    HStack(spacing: 8) {
+                        RunningDot()
+                        Text("Running…").font(.vm.footnote).foregroundStyle(Color.vm.tint)
+                    }
+                }
+                if let d = m.delivered {
+                    Text(d).font(.vm.footnote).italic().foregroundStyle(Color.vm.labelTertiary)
+                }
             }
-
-            HStack(spacing: 20) {
-                VMIcon(name: "list", size: 20, color: .vm.labelTertiary)
-                VMIcon(name: "copy", size: 20, color: .vm.labelTertiary)
-            }
-            .padding(.top, 2)
-
-            Text("Delivered at May 11, 10:26 AM")
-                .font(.vm.footnote)
-                .italic()
-                .foregroundStyle(Color.vm.labelTertiary)
+            Spacer(minLength: 0)
         }
     }
 
@@ -152,28 +205,62 @@ struct ChatView: View {
             .background(Color.vm.fill2, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 
-    // chatbox = 真 Liquid Glass
+    // chatbox = 真 Liquid Glass;左 + 菜单(收敛附件/连接/模板)· 上下文 · 发送
     private var inputBar: some View {
-        VStack(alignment: .leading, spacing: 14) {
-            Text(input.isEmpty ? "How can I help you?" : input)
+        VStack(alignment: .leading, spacing: 12) {
+            TextField("Message Zero…", text: $input, axis: .vertical)
                 .font(.vm.body)
-                .foregroundStyle(Color.vm.labelTertiary)
+                .foregroundStyle(Color.vm.label)
+                .tint(Color.vm.tint)          // 光标 = 品牌橙
+                .lineLimit(1...5)
 
-            HStack(spacing: 22) {
-                VMIcon(name: "plus", size: 22, color: .vm.label)
-                VMIcon(name: "paperclip", size: 22, color: .vm.label)
-                VMIcon(name: "plug", size: 22, color: .vm.label)
+            HStack(spacing: 18) {
+                // + = 统一"添加"菜单(原生 Menu;附件吸收进来)
+                Menu {
+                    Button { } label: { Label("Attach file", systemImage: "paperclip") }
+                    Button { } label: { Label("Photo", systemImage: "photo") }
+                    Button { } label: { Label("Add connector", systemImage: "bolt") }
+                    Button { } label: { Label("Templates", systemImage: "square.grid.2x2") }
+                } label: {
+                    VMIcon(name: "plus", size: 22, color: .vm.label)
+                }
+
+                // 上下文/connector 常驻(Zero 招牌:这次让它用哪个 repo / 收件箱)
+                Button { } label: { VMIcon(name: "plug", size: 22, color: .vm.label) }
+                    .buttonStyle(.plain)
+
                 Spacer()
-                VMIcon(name: "sparkles", size: 22, color: .vm.tint)
-                Circle()
-                    .fill(Color.vm.tint)
-                    .frame(width: 38, height: 38)
-                    .overlay(VMIcon(name: "microphone", size: 18, color: .white))
+
+                // 主操作:实色 tint 圆钮(有文字=发送,空=语音)
+                Button { send(input) } label: {
+                    Circle()
+                        .fill(Color.vm.tint)
+                        .frame(width: 38, height: 38)
+                        .overlay(VMIcon(name: "microphone", size: 18, color: .white))
+                }
+                .buttonStyle(.plain)
             }
         }
+        .tint(Color.vm.tint)
         .padding(18)
         .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
         .padding(.horizontal, 12)
         .padding(.bottom, 8)
+    }
+
+    private func send(_ text: String) {
+        let t = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        guard !t.isEmpty else { return }
+        if messages.isEmpty { threadTitle = t }
+        messages.append(ChatMessage(role: .user, text: t))
+        input = ""
+        // POC:一句 canned 回执,让 flow 看起来是活的
+        messages.append(ChatMessage(role: .assistant, text: "On it — let me take a look.", running: true))
+    }
+
+    private func startNewChat() {
+        messages = []
+        input = ""
+        threadTitle = "New chat"
     }
 }
