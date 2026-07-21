@@ -15,7 +15,7 @@
 export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
 SDK=$(xcrun --sdk iphonesimulator --show-sdk-path)
 xcrun --sdk iphonesimulator swiftc -target arm64-apple-ios26.0-simulator -sdk "$SDK" \
-  VM0App.swift ChatView.swift -o VM0Chat
+  VM0App.swift VMTheme.swift ChatView.swift -o VM0Chat
 mkdir -p VM0Chat.app && cp VM0Chat *.png VM0Chat.app/
 # + Info.plist(见 COMPONENTS.md / 历史),然后:
 xcrun simctl install booted VM0Chat.app && xcrun simctl launch booted ai.vm0.chatpoc
