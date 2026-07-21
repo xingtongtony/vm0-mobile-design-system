@@ -1,0 +1,6 @@
+# build artifacts(可由 swiftc 重新生成)
+VM0Chat
+VM0Chat.app/
+.DS_Store
+# demo 录屏(本地留存,不入库)
+*.mp4
