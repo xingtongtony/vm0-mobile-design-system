@@ -1,56 +1,8 @@
 import SwiftUI
 import UIKit
 
-// VM0 图标 —— 加载 bundle 里的 Tabler PNG,模板着色(= 我们自己的图标库)
-struct VMIcon: View {
-    let name: String
-    var size: CGFloat = 22
-    var color: Color = .vm.label
-
-    var body: some View {
-        Group {
-            if let path = Bundle.main.path(forResource: name, ofType: "png"),
-               let ui = UIImage(contentsOfFile: path) {
-                Image(uiImage: ui).renderingMode(.template).resizable().scaledToFit()
-            } else {
-                Image(systemName: "questionmark").resizable().scaledToFit()
-            }
-        }
-        .frame(width: size, height: size)
-        .foregroundStyle(color)
-    }
-}
-
-// Agent 头像 —— 官方插画直接显示,无背景、无裁切(Zero = 手绘吉祥物 zero-avatar.png)。
-// 没有头像资源的 agent 回退成首字母圆片。
-struct AgentAvatar: View {
-    let agent: Agent
-    var size: CGFloat = 40
-
-    var body: some View {
-        Group {
-            if let path = Bundle.main.path(forResource: agent.avatar, ofType: "png"),
-               let ui = UIImage(contentsOfFile: path) {
-                Image(uiImage: ui).resizable().scaledToFit()
-            } else {
-                Circle()
-                    .fill(Color.vm.fill3)
-                    .overlay(
-                        Text(agent.initial)
-                            .font(.system(size: size * 0.42, weight: .semibold))
-                            .foregroundStyle(Color.vm.labelSecondary)
-                    )
-            }
-        }
-        .frame(width: size, height: size)
-    }
-}
-
-// 运行中指示点 —— 品牌橙,thread 行 / assistant running 行共用
-struct RunningDot: View {
-    var size: CGFloat = 7
-    var body: some View { Circle().fill(Color.vm.tint).frame(width: size, height: size) }
-}
+// 组件(VMIcon / AgentAvatar / RunningDot / GlassCircleButton / GlassPill / SideDrawer)
+// 都在 VMComponents.swift —— 单一真源,改那里即全局更新。
 
 struct ChatView: View {
     @State private var messages: [ChatMessage] = ChatMessage.sampleThread
@@ -87,21 +39,24 @@ struct ChatView: View {
         .safeAreaInset(edge: .top) { topBar }
         .safeAreaInset(edge: .bottom) { inputBar }
         .background(Color.vm.bgGrouped.ignoresSafeArea())
-        .sheet(isPresented: $showThreads) {
-            ThreadsView(
-                onSelect: { _ in messages = ChatMessage.sampleThread },
-                onNew: { startNewChat() }
-            )
+        .overlay(alignment: .leading) {
+            SideDrawer(isOpen: $showThreads) {
+                ThreadsDrawer(
+                    onClose: { showThreads = false },
+                    onSelect: { _ in messages = ChatMessage.sampleThread; showThreads = false },
+                    onNew: { startNewChat(); showThreads = false }
+                )
+            }
         }
     }
 
-    // 顶栏:threads 圆钮 · agent 切换 pill(无标题) · 新建圆钮
+    // 顶栏:三横线抽屉钮 · agent 切换 pill(无标题) · 新建圆钮
     private var topBar: some View {
         HStack(spacing: 10) {
-            glassCircle("list") { showThreads = true }
+            GlassCircleButton(icon: "menu") { showThreads = true }
             agentSwitcher
             Spacer()
-            glassCircle("plus") { startNewChat() }
+            GlassCircleButton(icon: "plus") { startNewChat() }
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
@@ -109,7 +64,9 @@ struct ChatView: View {
 
     // agent 切换入口 —— 玻璃 pill,点开是原生 .popover 下拉(每行带真头像 + 选中打勾)
     private var agentSwitcher: some View {
-        Button { showAgentPicker = true } label: {
+        GlassPill {
+            showAgentPicker = true
+        } label: {
             HStack(spacing: 8) {
                 AgentAvatar(agent: currentAgent, size: 24)
                 Text(currentAgent.name)
@@ -119,12 +76,7 @@ struct ChatView: View {
                     .font(.system(size: 12, weight: .semibold))
                     .foregroundStyle(Color.vm.labelSecondary)
             }
-            .padding(.leading, 6)
-            .padding(.trailing, 12)
-            .frame(height: 40)
-            .glassEffect(.regular.interactive(), in: Capsule())
         }
-        .buttonStyle(.plain)
         .popover(isPresented: $showAgentPicker) {
             agentPicker.presentationCompactAdaptation(.popover)
         }
@@ -160,16 +112,6 @@ struct ChatView: View {
         }
         .frame(width: 240)
         .background(Color.vm.bgElevated)
-    }
-
-    // header button = 真 Liquid Glass(iOS 26 .glassEffect)
-    private func glassCircle(_ icon: String, action: @escaping () -> Void) -> some View {
-        Button(action: action) {
-            VMIcon(name: icon, size: 19, color: .vm.label)
-                .frame(width: 40, height: 40)
-                .glassEffect(.regular.interactive(), in: .circle)
-        }
-        .buttonStyle(.plain)
     }
 
     // 空态:agent 头像 + 招呼 + 模板 tile(点一下直接发)

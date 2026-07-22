@@ -6,7 +6,8 @@
 ## 内容
 - `VM0App.swift` — app 入口
 - `VMTheme.swift` — 全套 token(明暗双模式色 + Noto Sans 字阶 + radius/space)
-- `ChatModels.swift` — ChatMessage / ChatThread(POC 假数据)
+- `VMComponents.swift` — **组件库单一真源**(VMIcon / AgentAvatar / RunningDot / GlassCircleButton / GlassPill / SideDrawer);改这一处 = 全局更新
+- `ChatModels.swift` — Agent / ChatMessage / ChatThread(POC 假数据)
 - `ChatView.swift` — 聊天页(chat-first:threads 抽屉 / 新建、空态模板 tile、Menu composer、Liquid Glass、Tabler 图标、VM0 token 色)
 - `ThreadsView.swift` — 左侧 threads 抽屉(原生 List/searchable/swipeActions,照桌面模型)
 - `makeicons.swift` — Tabler SVG → 模板 PNG 图标管线(亮度转 alpha + 固定窗口居中裁剪)

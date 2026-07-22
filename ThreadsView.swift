@@ -1,12 +1,11 @@
 import SwiftUI
 
-// 左侧 threads 抽屉 —— 照搬桌面模型:一列 chat threads,pin 置顶,每行 running 指示器,
-// 右上 + 新建,底部账户行。用原生 List / searchable / swipeActions / NavigationStack,
-// 仅做 token 的 font/color/icon 定制。
-struct ThreadsView: View {
-    @Environment(\.dismiss) private var dismiss
+// 左抽屉内容 —— 一列 chat threads(照桌面模型)。顶部图标用中性 label 色,
+// 与聊天页顶栏图标同一变量(不是橙色)。原生 List / TextField / swipeActions。
+struct ThreadsDrawer: View {
     @State private var threads = ChatThread.samples
     @State private var query = ""
+    var onClose: () -> Void
     var onSelect: (ChatThread) -> Void
     var onNew: () -> Void
 
@@ -17,7 +16,9 @@ struct ThreadsView: View {
     private var recent: [ChatThread] { filtered.filter { !$0.pinned } }
 
     var body: some View {
-        NavigationStack {
+        VStack(spacing: 0) {
+            header
+            searchField
             List {
                 if !pinned.isEmpty {
                     Section("Pinned") { ForEach(pinned) { row($0) } }
@@ -25,28 +26,45 @@ struct ThreadsView: View {
                 Section("Recent") { ForEach(recent) { row($0) } }
             }
             .listStyle(.plain)
-            .searchable(text: $query, prompt: "Search chats")
-            .navigationTitle("Chats")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Close") { dismiss() }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button { onNew(); dismiss() } label: {
-                        VMIcon(name: "plus", size: 20, color: .vm.tint)
-                    }
-                }
-            }
-            .safeAreaInset(edge: .bottom) { accountRow }
+            .scrollContentBackground(.hidden)
+            accountRow
         }
-        .tint(Color.vm.tint)   // 原生控件选中/强调色 → VM0 橙(不是系统蓝)
+    }
+
+    // 顶部:三横线(关闭)· 标题 · 新建 —— 图标 = .vm.label(同聊天页顶栏)
+    private var header: some View {
+        HStack(spacing: 12) {
+            Button { onClose() } label: { VMIcon(name: "menu", size: 20, color: .vm.label) }
+                .buttonStyle(.plain)
+            Text("Chats").font(.vm.title3).foregroundStyle(Color.vm.label)
+            Spacer()
+            Button { onNew() } label: { VMIcon(name: "plus", size: 20, color: .vm.label) }
+                .buttonStyle(.plain)
+        }
+        .padding(.horizontal, 16)
+        .padding(.top, 14)
+        .padding(.bottom, 10)
+    }
+
+    private var searchField: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "magnifyingglass")
+                .font(.system(size: 14))
+                .foregroundStyle(Color.vm.labelTertiary)
+            TextField("Search chats", text: $query)
+                .font(.vm.subhead)
+                .foregroundStyle(Color.vm.label)
+                .tint(Color.vm.tint)
+        }
+        .padding(.horizontal, 12)
+        .frame(height: 38)
+        .background(Color.vm.fill3, in: RoundedRectangle(cornerRadius: VM.radius.md, style: .continuous))
+        .padding(.horizontal, 16)
+        .padding(.bottom, 8)
     }
 
     private func row(_ t: ChatThread) -> some View {
-        Button {
-            onSelect(t); dismiss()
-        } label: {
+        Button { onSelect(t) } label: {
             HStack(spacing: 12) {
                 Text(t.emoji)
                     .font(.system(size: 20))
@@ -70,6 +88,7 @@ struct ThreadsView: View {
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
+        .listRowBackground(Color.clear)
         .listRowSeparatorTint(Color.vm.separatorHairline)
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
             Button(role: .destructive) { delete(t) } label: { Label("Delete", systemImage: "trash") }
@@ -89,12 +108,13 @@ struct ThreadsView: View {
                 Text("Settings").font(.vm.caption1).foregroundStyle(Color.vm.labelSecondary)
             }
             Spacer()
-            Image(systemName: "gearshape")   // 占位:待换成 Tabler 齿轮图标
+            Image(systemName: "gearshape")
                 .font(.system(size: 18))
                 .foregroundStyle(Color.vm.labelTertiary)
         }
-        .padding(.horizontal, 20).padding(.vertical, 12)
-        .background(.thinMaterial)
+        .padding(.horizontal, 20)
+        .padding(.vertical, 12)
+        .overlay(Rectangle().fill(Color.vm.separatorHairline).frame(height: 1), alignment: .top)
     }
 
     private func delete(_ t: ChatThread) { threads.removeAll { $0.id == t.id } }
