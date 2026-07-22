@@ -11,6 +11,7 @@ struct ChatView: View {
     @State private var showAgentPicker = false
     @State private var showAddMenu = false
     @State private var agentID = Agent.zero.id
+    @FocusState private var inputFocused: Bool
 
     // composer + 菜单项(图标 = 我们的 Tabler,同 vm0 web:template/route 等)
     private let addItems: [(icon: String, label: String)] = [
@@ -239,15 +240,19 @@ struct ChatView: View {
 
     // chatbox = 真 Liquid Glass;左 + 菜单(收敛附件/连接/模板)· 上下文 · 发送
     private var inputBar: some View {
-        VStack(alignment: .leading, spacing: 12) {
+        VStack(alignment: .leading, spacing: 10) {
             TextField("Message Zero…", text: $input, axis: .vertical)
                 .font(.vm.body)
                 .foregroundStyle(Color.vm.label)
                 .tint(Color.vm.tint)          // 光标 = 品牌橙
                 .lineLimit(1...5)
+                .focused($inputFocused)
+                .padding(.horizontal, 18)
+                .padding(.top, 16)
 
-            HStack(spacing: 18) {
-                // + = 统一"添加"菜单(自绘 popover,用我们的 Tabler 图标)
+            // 控件行:三者 .center 共享中心线;下内边距 10 抵消圆钮撑高的 8pt,
+            // 使 + 的左边距 ≈ 下边距;橘色钮 trailing/bottom 收到 10 更贴角
+            HStack(alignment: .center, spacing: 18) {
                 Button { showAddMenu = true } label: {
                     VMIcon(name: "plus", size: 22, color: .vm.label)
                 }
@@ -256,13 +261,11 @@ struct ChatView: View {
                     addMenu.presentationCompactAdaptation(.popover)
                 }
 
-                // 上下文/connector 常驻(Zero 招牌:这次让它用哪个 repo / 收件箱)
                 Button { } label: { VMIcon(name: "plug", size: 22, color: .vm.label) }
                     .buttonStyle(.plain)
 
                 Spacer()
 
-                // 主操作:实色 tint 圆钮(有文字=发送,空=语音)
                 Button { send(input) } label: {
                     Circle()
                         .fill(Color.vm.tint)
@@ -271,10 +274,14 @@ struct ChatView: View {
                 }
                 .buttonStyle(.plain)
             }
+            .padding(.leading, 18)
+            .padding(.trailing, 10)
+            .padding(.bottom, 10)
         }
         .tint(Color.vm.tint)
-        .padding(18)
         .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
+        .contentShape(RoundedRectangle(cornerRadius: 26, style: .continuous))
+        .onTapGesture { inputFocused = true }   // 点输入区任意位置 → 聚焦调起键盘
         .padding(.horizontal, 12)
         .padding(.bottom, 8)
     }
