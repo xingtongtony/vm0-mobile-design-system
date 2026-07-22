@@ -17,19 +17,51 @@ struct Agent: Identifiable, Hashable {
 }
 
 // Connector —— vm0 集成(图标 = 从 static.vm0.io 拉下的品牌 SVG 渲成的 connector-<id>.png)。
+// connected = 是否已连接(已连接的显示在对话框的叠加头像里,并在列表中标记)。
 struct Connector: Identifiable, Hashable {
     let id: String
     var name: String
     var icon: String
+    var connected: Bool = false
 
     static let samples: [Connector] = [
-        .init(id: "github", name: "GitHub", icon: "connector-github"),
+        .init(id: "github", name: "GitHub", icon: "connector-github", connected: true),
+        .init(id: "gmail", name: "Gmail", icon: "connector-gmail", connected: true),
+        .init(id: "google-drive", name: "Google Drive", icon: "connector-google-drive", connected: true),
         .init(id: "notion", name: "Notion", icon: "connector-notion"),
-        .init(id: "gmail", name: "Gmail", icon: "connector-gmail"),
         .init(id: "linear", name: "Linear", icon: "connector-linear"),
-        .init(id: "google-drive", name: "Google Drive", icon: "connector-google-drive"),
         .init(id: "figma", name: "Figma", icon: "connector-figma"),
         .init(id: "discord", name: "Discord", icon: "connector-discord"),
+        .init(id: "asana", name: "Asana", icon: "connector-asana"),
+        .init(id: "airtable", name: "Airtable", icon: "connector-airtable"),
+        .init(id: "hubspot", name: "HubSpot", icon: "connector-hubspot"),
+        .init(id: "stripe", name: "Stripe", icon: "connector-stripe"),
+        .init(id: "jira", name: "Jira", icon: "connector-jira"),
+        .init(id: "gitlab", name: "GitLab", icon: "connector-gitlab"),
+    ]
+
+    static var connected: [Connector] { samples.filter { $0.connected } }
+}
+
+// Workflow —— vm0 的可复用 SOP(对应 web 的 Workflows 页面)。POC 假数据。
+struct Workflow: Identifiable, Hashable {
+    let id = UUID()
+    var name: String
+    var trigger: String        // "Manual" / "Automated"
+    var isPublic: Bool
+    var agentAvatar: String    // 负责的 agent 头像
+
+    static let samples: [Workflow] = [
+        .init(name: "Ad Campaign", trigger: "Manual", isPublic: true, agentAvatar: "ada-avatar"),
+        .init(name: "Anthropic Design", trigger: "Manual", isPublic: true, agentAvatar: "lucas-avatar"),
+        .init(name: "axiom-red", trigger: "Manual", isPublic: true, agentAvatar: "zero-avatar"),
+        .init(name: "Connector Create", trigger: "Manual", isPublic: true, agentAvatar: "zero-avatar"),
+        .init(name: "Course Inbound Poller", trigger: "Manual", isPublic: true, agentAvatar: "zero-avatar"),
+        .init(name: "Daily Standup Report", trigger: "Manual", isPublic: true, agentAvatar: "zero-avatar"),
+        .init(name: "Draw vm0 Cover", trigger: "Manual", isPublic: true, agentAvatar: "lucas-avatar"),
+        .init(name: "Editorial Illustration", trigger: "Manual", isPublic: true, agentAvatar: "lucas-avatar"),
+        .init(name: "Flaky Test", trigger: "Manual", isPublic: true, agentAvatar: "zero-avatar"),
+        .init(name: "folk-storybook", trigger: "Manual", isPublic: true, agentAvatar: "lucas-avatar"),
     ]
 }
 

@@ -118,6 +118,46 @@ struct GlassPill<Label: View>: View {
     }
 }
 
+// MARK: - ConnectorStack
+// 已连接工具的叠加头像(白圈环绕,重叠排列)—— 对话框里代替单个 plug 图标。
+struct ConnectorStack: View {
+    var connectors: [Connector]
+    var size: CGFloat = 26
+
+    var body: some View {
+        HStack(spacing: -size * 0.34) {
+            ForEach(connectors) { c in
+                VMImage(name: c.icon, size: size * 0.6)
+                    .frame(width: size, height: size)
+                    .background(Circle().fill(Color.vm.bgElevated))
+                    .overlay(Circle().strokeBorder(Color.vm.separatorHairline, lineWidth: 1))
+            }
+        }
+    }
+}
+
+// MARK: - VMSheetHeader
+// bottom sheet 通用头:标题 + 右上关闭(圆形 x)。
+struct VMSheetHeader: View {
+    let title: String
+    var onClose: () -> Void
+    var body: some View {
+        HStack {
+            Text(title).font(.vm.title3).foregroundStyle(Color.vm.label)
+            Spacer()
+            Button { onClose() } label: {
+                VMIcon(name: "x", size: 14, color: .vm.labelSecondary)
+                    .frame(width: 30, height: 30)
+                    .background(Color.vm.fill3, in: Circle())
+            }
+            .buttonStyle(.plain)
+        }
+        .padding(.horizontal, 20)
+        .padding(.top, 18)
+        .padding(.bottom, 12)
+    }
+}
+
 // MARK: - SideDrawer
 // 左侧滑出抽屉(不是 bottom sheet)。scrim 点击关闭,内容从左边缘 move 进出。
 struct SideDrawer<Content: View>: View {

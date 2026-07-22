@@ -1,0 +1,97 @@
+import SwiftUI
+
+// Skill/Workflows bottom sheet —— 对应 vm0 web 的 Workflows 页面。
+// 展示已定义好的 workflow;点一条 → 带入 chatbox(onPick)。全部 SwiftUI 原生组件。
+struct WorkflowsSheet: View {
+    var onClose: () -> Void
+    var onPick: (Workflow) -> Void
+
+    @State private var query = ""
+    @State private var filter = "All"
+    private let filters = ["All", "Automated", "Manual", "Private", "Public"]
+
+    private var filtered: [Workflow] {
+        Workflow.samples.filter {
+            (query.isEmpty || $0.name.localizedCaseInsensitiveContains(query)) &&
+            (filter == "All" || $0.trigger == filter ||
+             (filter == "Public" && $0.isPublic) || (filter == "Private" && !$0.isPublic))
+        }
+    }
+
+    var body: some View {
+        VStack(spacing: 0) {
+            VMSheetHeader(title: "Workflows", onClose: onClose)
+
+            Text("A reusable SOP for a task. Run, edit, or automate it.")
+                .font(.vm.footnote).foregroundStyle(Color.vm.labelSecondary)
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .padding(.horizontal, 20).padding(.bottom, 12)
+
+            // 过滤 chips(原生 ScrollView 横滑)
+            ScrollView(.horizontal, showsIndicators: false) {
+                HStack(spacing: 8) {
+                    ForEach(filters, id: \.self) { f in
+                        let on = filter == f
+                        Button { filter = f } label: {
+                            Text(f).font(.vm.subhead)
+                                .foregroundStyle(on ? Color.vm.onTint : Color.vm.label)
+                                .padding(.horizontal, 14).frame(height: 32)
+                                .background(on ? Color.vm.label : Color.vm.fill3, in: Capsule())
+                        }
+                        .buttonStyle(.plain)
+                    }
+                }
+                .padding(.horizontal, 20)
+            }
+            .padding(.bottom, 10)
+
+            // 搜索
+            HStack(spacing: 8) {
+                VMIcon(name: "search", size: 16, color: .vm.labelTertiary)
+                TextField("Search workflows", text: $query)
+                    .font(.vm.subhead).foregroundStyle(Color.vm.label).tint(Color.vm.tint)
+            }
+            .padding(.horizontal, 12).frame(height: 38)
+            .background(Color.vm.fill3, in: RoundedRectangle(cornerRadius: VM.radius.md, style: .continuous))
+            .padding(.horizontal, 20).padding(.bottom, 8)
+
+            ScrollView {
+                VStack(spacing: 0) {
+                    ForEach(filtered) { w in
+                        Button { onPick(w) } label: { row(w) }
+                            .buttonStyle(.plain)
+                        if w.id != filtered.last?.id {
+                            Divider().overlay(Color.vm.separatorHairline).padding(.leading, 66)
+                        }
+                    }
+                }
+                .padding(.bottom, 24)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .presentationDetents([.large])
+        .presentationDragIndicator(.visible)
+        .presentationBackground(.ultraThinMaterial)
+    }
+
+    private func row(_ w: Workflow) -> some View {
+        HStack(spacing: 12) {
+            // workflow 图标 tile
+            VMIcon(name: "route", size: 20, color: .vm.label)
+                .frame(width: 38, height: 38)
+                .background(Color.vm.fill3, in: RoundedRectangle(cornerRadius: VM.radius.md, style: .continuous))
+            Text(w.name).font(.vm.body).foregroundStyle(Color.vm.label).lineLimit(1)
+            Spacer(minLength: 8)
+            Text(w.trigger)
+                .font(.vm.caption1).foregroundStyle(Color.vm.labelSecondary)
+                .padding(.horizontal, 10).frame(height: 24)
+                .background(Color.vm.fill3, in: Capsule())
+            if w.isPublic {
+                VMIcon(name: "world", size: 16, color: .vm.link)
+            }
+            AgentAvatar(agent: Agent(id: w.name, name: w.name, avatar: w.agentAvatar, initial: "•"), size: 26)
+        }
+        .padding(.horizontal, 20).frame(height: 60)
+        .contentShape(Rectangle())
+    }
+}

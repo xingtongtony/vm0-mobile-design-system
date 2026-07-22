@@ -11,6 +11,8 @@ struct ChatView: View {
     @State private var showAgentPicker = false
     @State private var agentID = Agent.zero.id
     @State private var showAddSheet = false
+    @State private var showWorkflows = false
+    @State private var showConnectors = false
     @FocusState private var inputFocused: Bool
 
     private var currentAgent: Agent {
@@ -214,18 +216,24 @@ struct ChatView: View {
 
             // 控件行:三者 .center 共享中心线;下内边距 10 抵消圆钮撑高的 8pt,
             // 使 + 的左边距 ≈ 下边距;橘色钮 trailing/bottom 收到 10 更贴角
-            HStack(alignment: .center, spacing: 18) {
+            HStack(alignment: .center, spacing: 16) {
                 // + = 原生 bottom sheet(内容自排,图标用我们的 Tabler + 深色)
                 Button { showAddSheet = true } label: {
                     VMIcon(name: "plus", size: 22, color: .vm.label)
                 }
                 .buttonStyle(.plain)
-                .sheet(isPresented: $showAddSheet) {
-                    ComposerAddSheet(onClose: { showAddSheet = false })
-                }
 
-                Button { } label: { VMIcon(name: "plug", size: 22, color: .vm.label) }
-                    .buttonStyle(.plain)
+                // skill = 打开 Workflows sheet
+                Button { showWorkflows = true } label: {
+                    VMIcon(name: "apps", size: 22, color: .vm.label)
+                }
+                .buttonStyle(.plain)
+
+                // 已连接工具的叠加头像 → 打开 Connectors sheet
+                Button { showConnectors = true } label: {
+                    ConnectorStack(connectors: Connector.connected, size: 26)
+                }
+                .buttonStyle(.plain)
 
                 Spacer()
 
@@ -247,6 +255,22 @@ struct ChatView: View {
         .onTapGesture { inputFocused = true }   // 点输入区任意位置 → 聚焦调起键盘
         .padding(.horizontal, 12)
         .padding(.bottom, 8)
+        .sheet(isPresented: $showAddSheet) {
+            ComposerAddSheet(onClose: { showAddSheet = false })
+        }
+        .sheet(isPresented: $showWorkflows) {
+            WorkflowsSheet(
+                onClose: { showWorkflows = false },
+                onPick: { w in
+                    input = input.isEmpty ? w.name : input + " " + w.name
+                    showWorkflows = false
+                    inputFocused = true
+                }
+            )
+        }
+        .sheet(isPresented: $showConnectors) {
+            ConnectorsSheet(onClose: { showConnectors = false })
+        }
     }
 
     private func send(_ text: String) {

@@ -50,11 +50,7 @@ struct ComposerAddSheet: View {
                     card("file-plus", "File") { showFileImporter = true }
                 }
 
-                Text("3 uploads remaining today")
-                    .font(.vm.footnote)
-                    .foregroundStyle(Color.vm.labelSecondary)
-
-                // 下面的选项列表(之前被我误删的项在这里补回)
+                // 下面的选项列表
                 VStack(spacing: 0) {
                     ForEach(options) { opt in
                         Button { handleOption(opt) } label: { optionRow(opt) }
@@ -144,27 +140,6 @@ struct ComposerAddSheet: View {
     }
 }
 
-// 子 sheet 通用头
-private struct SheetHeader: View {
-    let title: String
-    var onClose: () -> Void
-    var body: some View {
-        HStack {
-            Text(title).font(.vm.title3).foregroundStyle(Color.vm.label)
-            Spacer()
-            Button { onClose() } label: {
-                VMIcon(name: "x", size: 14, color: .vm.labelSecondary)
-                    .frame(width: 30, height: 30)
-                    .background(Color.vm.fill3, in: Circle())
-            }
-            .buttonStyle(.plain)
-        }
-        .padding(.horizontal, 20)
-        .padding(.top, 18)
-        .padding(.bottom, 12)
-    }
-}
-
 // Image —— 近期照片网格(POC:渐变占位缩略图)
 struct ImagePickerSheet: View {
     var onClose: () -> Void
@@ -177,7 +152,7 @@ struct ImagePickerSheet: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            SheetHeader(title: "Photos", onClose: onClose)
+            VMSheetHeader(title: "Photos", onClose: onClose)
             ScrollView {
                 LazyVGrid(columns: cols, spacing: 8) {
                     ForEach(Array(swatches.enumerated()), id: \.offset) { _, c in
@@ -206,7 +181,7 @@ struct CameraSheet: View {
     var onClose: () -> Void
     var body: some View {
         VStack(spacing: 0) {
-            SheetHeader(title: "Camera", onClose: onClose)
+            VMSheetHeader(title: "Camera", onClose: onClose)
             RoundedRectangle(cornerRadius: VM.radius.card, style: .continuous)
                 .fill(Color.black.opacity(0.85))
                 .overlay(
@@ -230,8 +205,83 @@ struct CameraSheet: View {
     }
 }
 
-// Connectors —— 搜索 + 集成列表(真图标)
+// 已连接标记(绿勾 + Connected)
+private struct ConnectedTag: View {
+    var body: some View {
+        HStack(spacing: 5) {
+            VMIcon(name: "check", size: 13, color: .vm.success)
+            Text("Connected").font(.vm.caption1).foregroundStyle(Color.vm.success)
+        }
+    }
+}
+
+// 连接器行(图标 + 名字 + 已连/未连状态)
+private struct ConnectorRow: View {
+    let c: Connector
+    var body: some View {
+        HStack(spacing: 12) {
+            VMImage(name: c.icon, size: 28)
+            Text(c.name).font(.vm.body).foregroundStyle(Color.vm.label)
+            Spacer()
+            if c.connected {
+                ConnectedTag()
+            } else {
+                Text("Add").font(.vm.subhead).foregroundStyle(Color.vm.tint)
+            }
+        }
+        .padding(.horizontal, 20).frame(height: 52)
+        .contentShape(Rectangle())
+    }
+}
+
+// Connectors —— 已连接的工具 + "Add connectors" 入口
 struct ConnectorsSheet: View {
+    var onClose: () -> Void
+    @State private var showAll = false
+
+    var body: some View {
+        VStack(spacing: 0) {
+            VMSheetHeader(title: "Connectors", onClose: onClose)
+            ScrollView {
+                VStack(spacing: 0) {
+                    // Add connectors 入口 → 全部集成
+                    Button { showAll = true } label: {
+                        HStack(spacing: 12) {
+                            VMIcon(name: "plus", size: 20, color: .vm.tint)
+                                .frame(width: 28, height: 28)
+                                .background(Color.vm.tintSubtle, in: Circle())
+                            Text("Add connectors").font(.vm.body).foregroundStyle(Color.vm.label)
+                            Spacer()
+                            VMIcon(name: "chevron-right", size: 16, color: .vm.labelTertiary)
+                        }
+                        .padding(.horizontal, 20).frame(height: 56)
+                        .contentShape(Rectangle())
+                    }
+                    .buttonStyle(.plain)
+
+                    Text("Connected")
+                        .font(.vm.footnote).foregroundStyle(Color.vm.labelSecondary)
+                        .frame(maxWidth: .infinity, alignment: .leading)
+                        .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 2)
+
+                    ForEach(Connector.connected) { c in
+                        Button { onClose() } label: { ConnectorRow(c: c) }
+                            .buttonStyle(.plain)
+                    }
+                }
+                .padding(.bottom, 24)
+            }
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .presentationDetents([.medium, .large])
+        .presentationDragIndicator(.visible)
+        .presentationBackground(.ultraThinMaterial)
+        .sheet(isPresented: $showAll) { AllConnectorsSheet(onClose: { showAll = false }) }
+    }
+}
+
+// Add connectors —— 全部集成(已连接的标记 Connected,其余 Add)
+struct AllConnectorsSheet: View {
     var onClose: () -> Void
     @State private var query = ""
 
@@ -242,38 +292,28 @@ struct ConnectorsSheet: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            SheetHeader(title: "Connectors", onClose: onClose)
+            VMSheetHeader(title: "Add connectors", onClose: onClose)
             HStack(spacing: 8) {
                 VMIcon(name: "search", size: 16, color: .vm.labelTertiary)
-                TextField("Search connectors", text: $query)
+                TextField("Search integrations", text: $query)
                     .font(.vm.subhead).foregroundStyle(Color.vm.label).tint(Color.vm.tint)
             }
             .padding(.horizontal, 12).frame(height: 38)
             .background(Color.vm.fill3, in: RoundedRectangle(cornerRadius: VM.radius.md, style: .continuous))
-            .padding(.horizontal, 20)
-            .padding(.bottom, 8)
+            .padding(.horizontal, 20).padding(.bottom, 8)
 
             ScrollView {
                 VStack(spacing: 0) {
                     ForEach(filtered) { c in
-                        Button { onClose() } label: {
-                            HStack(spacing: 12) {
-                                VMImage(name: c.icon, size: 28)
-                                Text(c.name).font(.vm.body).foregroundStyle(Color.vm.label)
-                                Spacer()
-                                VMIcon(name: "chevron-right", size: 16, color: .vm.labelTertiary)
-                            }
-                            .padding(.horizontal, 20).frame(height: 52)
-                            .contentShape(Rectangle())
-                        }
-                        .buttonStyle(.plain)
+                        Button { onClose() } label: { ConnectorRow(c: c) }
+                            .buttonStyle(.plain)
                     }
                 }
                 .padding(.bottom, 24)
             }
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .presentationDetents([.medium, .large])
+        .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .presentationBackground(.ultraThinMaterial)
     }
