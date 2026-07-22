@@ -1,6 +1,16 @@
 import SwiftUI
 import UniformTypeIdentifiers
 
+// 卡片下方选项行的数据
+struct AddOption: Identifiable {
+    enum Trailing { case check, lock, maxLock, chevron }
+    let id = UUID()
+    var icon: String
+    var title: String
+    var subtitle: String?
+    var trailing: Trailing
+}
+
 // composer + 的原生 bottom sheet —— Options 头(标题 + 关闭) + Image/Camera/File/Connectors 四卡。
 // 点每张卡各自弹一个子 sheet(File 走原生 fileImporter)。全部 SwiftUI 原生组件。
 struct ComposerAddSheet: View {
@@ -10,38 +20,59 @@ struct ComposerAddSheet: View {
     @State private var sub: Sub?
     @State private var showFileImporter = false
 
+    // 卡片下面那一列选项(范例的 Search/Deep research/Model council + 我们的 Templates/Create workflow)
+    private let options: [AddOption] = [
+        .init(icon: "search",    title: "Search",         subtitle: nil,                              trailing: .check),
+        .init(icon: "telescope", title: "Deep research",  subtitle: "In-depth reports and analysis",  trailing: .lock),
+        .init(icon: "scale",     title: "Model council",  subtitle: "Multiple AI models at once",     trailing: .maxLock),
+        .init(icon: "template",  title: "Templates",      subtitle: "Start from a template",          trailing: .chevron),
+        .init(icon: "route",     title: "Create workflow", subtitle: "Automate a repeatable task",     trailing: .chevron),
+    ]
+
     var body: some View {
-        VStack(alignment: .leading, spacing: 16) {
-            // 头:标题 + 关闭
-            HStack {
-                Text("Options").font(.vm.title2).foregroundStyle(Color.vm.label)
-                Spacer()
-                Button { onClose() } label: {
-                    Image(systemName: "xmark")
-                        .font(.system(size: 13, weight: .semibold))
-                        .foregroundStyle(Color.vm.labelSecondary)
-                        .frame(width: 30, height: 30)
-                        .background(Color.vm.fill3, in: Circle())
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                // 头:标题 + 关闭
+                HStack {
+                    Text("Options").font(.vm.title2).foregroundStyle(Color.vm.label)
+                    Spacer()
+                    Button { onClose() } label: {
+                        Image(systemName: "xmark")
+                            .font(.system(size: 13, weight: .semibold))
+                            .foregroundStyle(Color.vm.labelSecondary)
+                            .frame(width: 30, height: 30)
+                            .background(Color.vm.fill3, in: Circle())
+                    }
+                    .buttonStyle(.plain)
                 }
-                .buttonStyle(.plain)
-            }
 
-            // 四张小卡
-            HStack(spacing: 10) {
-                card("photo", "Image") { sub = .image }
-                card("camera", "Camera") { sub = .camera }
-                card("file-plus", "File") { showFileImporter = true }
-                card("plug", "Connectors") { sub = .connectors }
-            }
+                // 四张小卡
+                HStack(spacing: 10) {
+                    card("photo", "Image") { sub = .image }
+                    card("camera", "Camera") { sub = .camera }
+                    card("file-plus", "File") { showFileImporter = true }
+                    card("plug", "Connectors") { sub = .connectors }
+                }
 
-            Text("3 uploads remaining today")
-                .font(.vm.footnote)
-                .foregroundStyle(Color.vm.labelSecondary)
+                Text("3 uploads remaining today")
+                    .font(.vm.footnote)
+                    .foregroundStyle(Color.vm.labelSecondary)
+
+                // 下面的选项列表(之前被我误删的项在这里补回)
+                VStack(spacing: 0) {
+                    ForEach(options) { opt in
+                        Button { onClose() } label: { optionRow(opt) }
+                            .buttonStyle(.plain)
+                    }
+                }
+                .padding(.top, 2)
+            }
+            .padding(.horizontal, 20)
+            .padding(.top, 18)
+            .padding(.bottom, 20)
         }
-        .padding(.horizontal, 20)
-        .padding(.top, 18)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .presentationDetents([.height(240)])
+        .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
         .presentationBackground(.ultraThinMaterial)
         .sheet(item: $sub) { which in
@@ -58,6 +89,41 @@ struct ComposerAddSheet: View {
         ) { _ in
             onClose()
         }
+    }
+
+    private func optionRow(_ opt: AddOption) -> some View {
+        let locked = (opt.trailing == .lock || opt.trailing == .maxLock)
+        return HStack(spacing: 14) {
+            VMIcon(name: opt.icon, size: 22, color: locked ? .vm.labelTertiary : .vm.label)
+            VStack(alignment: .leading, spacing: 1) {
+                HStack(spacing: 8) {
+                    Text(opt.title)
+                        .font(.vm.body)
+                        .foregroundStyle(locked ? Color.vm.labelTertiary : Color.vm.label)
+                    if opt.trailing == .maxLock {
+                        Text("Max")
+                            .font(.vm.caption2)
+                            .foregroundStyle(Color.vm.tint)
+                            .padding(.horizontal, 7).padding(.vertical, 2)
+                            .background(Color.vm.tintSubtle, in: Capsule())
+                    }
+                }
+                if let s = opt.subtitle {
+                    Text(s).font(.vm.footnote).foregroundStyle(Color.vm.labelTertiary)
+                }
+            }
+            Spacer()
+            switch opt.trailing {
+            case .check:
+                Image(systemName: "checkmark").font(.system(size: 14, weight: .semibold)).foregroundStyle(Color.vm.tint)
+            case .lock, .maxLock:
+                Image(systemName: "lock").font(.system(size: 15)).foregroundStyle(Color.vm.labelTertiary)
+            case .chevron:
+                Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold)).foregroundStyle(Color.vm.labelTertiary)
+            }
+        }
+        .frame(minHeight: 52)
+        .contentShape(Rectangle())
     }
 
     private func card(_ icon: String, _ label: String, action: @escaping () -> Void) -> some View {
