@@ -20,11 +20,6 @@ struct WorkflowsSheet: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            Text("A reusable SOP for a task. Run, edit, or automate it.")
-                .font(.vm.footnote).foregroundStyle(Color.vm.labelSecondary)
-                .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 12)
-
             // 过滤 chips(原生 ScrollView 横滑)
             ScrollView(.horizontal, showsIndicators: false) {
                 HStack(spacing: 8) {
@@ -41,31 +36,24 @@ struct WorkflowsSheet: View {
                 }
                 .padding(.horizontal, 20)
             }
-            .padding(.bottom, 10)
+            .padding(.top, 8).padding(.bottom, 6)
 
-            // 搜索
-            HStack(spacing: 8) {
-                VMIcon(name: "search", size: 16, color: .vm.labelTertiary)
-                TextField("Search workflows", text: $query)
-                    .font(.vm.subhead).foregroundStyle(Color.vm.label).tint(Color.vm.tint)
-            }
-            .padding(.horizontal, 12).frame(height: 38)
-            .background(Color.vm.fill3, in: RoundedRectangle(cornerRadius: VM.radius.md, style: .continuous))
-            .padding(.horizontal, 20).padding(.bottom, 8)
-
-            ScrollView {
-                VStack(spacing: 0) {
+            // 列表:原生 List
+            List {
+                Section {
                     ForEach(filtered) { w in
                         Button { onPick(w) } label: { row(w) }
                             .buttonStyle(.plain)
-                        if w.id != filtered.last?.id {
-                            Divider().overlay(Color.vm.separatorHairline).padding(.leading, 66)
-                        }
+                            .listRowBackground(Color.vm.bgElevated)
                     }
                 }
-                .padding(.bottom, 24)
             }
+            .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
         }
+        // 原生搜索(系统 glass 搜索栏)
+        .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search workflows")
+        .tint(Color.vm.tint)
         .vmSheetChrome(title: "Workflows", onClose: onClose)
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
@@ -74,8 +62,8 @@ struct WorkflowsSheet: View {
 
     private func row(_ w: Workflow) -> some View {
         HStack(spacing: 12) {
-            // workflow 图标 tile
-            VMIcon(name: "route", size: 20, color: .vm.label)
+            // workflow 图标 tile(拼图)
+            VMIcon(name: "puzzle", size: 20, color: .vm.label)
                 .frame(width: 38, height: 38)
                 .background(Color.vm.fill3, in: RoundedRectangle(cornerRadius: VM.radius.md, style: .continuous))
             Text(w.name).font(.vm.body).foregroundStyle(Color.vm.label).lineLimit(1)

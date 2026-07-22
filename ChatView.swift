@@ -214,18 +214,19 @@ struct ChatView: View {
                 .padding(.horizontal, 18)
                 .padding(.top, 16)
 
-            // 控件行:三者 .center 共享中心线;下内边距 10 抵消圆钮撑高的 8pt,
-            // 使 + 的左边距 ≈ 下边距;橘色钮 trailing/bottom 收到 10 更贴角
-            HStack(alignment: .center, spacing: 16) {
+            // 控件行:.center 共享中心线;间距收紧,更贴 chatbox 边缘,视觉更平衡
+            HStack(alignment: .center, spacing: 14) {
                 // + = 原生 bottom sheet(内容自排,图标用我们的 Tabler + 深色)
                 Button { showAddSheet = true } label: {
                     VMIcon(name: "plus", size: 22, color: .vm.label)
                 }
                 .buttonStyle(.plain)
 
-                // skill = 打开 Workflows sheet
+                // skill/workflow 入口 = 拼图,灰色 tile 背景
                 Button { showWorkflows = true } label: {
-                    VMIcon(name: "apps", size: 22, color: .vm.label)
+                    VMIcon(name: "puzzle", size: 18, color: .vm.label)
+                        .frame(width: 32, height: 32)
+                        .background(Color.vm.fill3, in: RoundedRectangle(cornerRadius: VM.radius.md, style: .continuous))
                 }
                 .buttonStyle(.plain)
 
@@ -245,9 +246,9 @@ struct ChatView: View {
                 }
                 .buttonStyle(.plain)
             }
-            .padding(.leading, 18)
-            .padding(.trailing, 10)
-            .padding(.bottom, 10)
+            .padding(.leading, 12)
+            .padding(.trailing, 8)
+            .padding(.bottom, 8)
         }
         .tint(Color.vm.tint)
         .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
