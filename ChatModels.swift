@@ -11,9 +11,8 @@ struct Agent: Identifiable, Hashable {
     static let zero = Agent(id: "zero", name: "Zero", avatar: "zero-avatar", initial: "Z")
     static let samples: [Agent] = [
         zero,
-        Agent(id: "research", name: "Researcher", avatar: "agent-research", initial: "R"),
-        Agent(id: "coder", name: "Coder", avatar: "agent-coder", initial: "C"),
-        Agent(id: "ops", name: "Ops", avatar: "agent-ops", initial: "O"),
+        Agent(id: "ada", name: "Ada", avatar: "ada-avatar", initial: "A"),
+        Agent(id: "lucas", name: "Lucas", avatar: "lucas-avatar", initial: "L"),
     ]
 }
 
