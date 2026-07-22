@@ -215,18 +215,20 @@ struct ChatView: View {
                 .padding(.top, 16)
 
             // 控件行:.center 共享中心线;间距收紧,更贴 chatbox 边缘,视觉更平衡
-            HStack(alignment: .center, spacing: 14) {
-                // + = 原生 bottom sheet(内容自排,图标用我们的 Tabler + 深色)
+            HStack(alignment: .center, spacing: 12) {
+                // + = 原生 bottom sheet;灰色圆形背景
                 Button { showAddSheet = true } label: {
-                    VMIcon(name: "plus", size: 22, color: .vm.label)
+                    VMIcon(name: "plus", size: 20, color: .vm.label)
+                        .frame(width: 34, height: 34)
+                        .background(Circle().fill(Color.vm.fill3))
                 }
                 .buttonStyle(.plain)
 
-                // skill/workflow 入口 = 拼图,灰色 tile 背景
+                // skill/workflow 入口 = route;灰色圆形背景
                 Button { showWorkflows = true } label: {
-                    VMIcon(name: "puzzle", size: 18, color: .vm.label)
-                        .frame(width: 32, height: 32)
-                        .background(Color.vm.fill3, in: RoundedRectangle(cornerRadius: VM.radius.md, style: .continuous))
+                    VMIcon(name: "route", size: 19, color: .vm.label)
+                        .frame(width: 34, height: 34)
+                        .background(Circle().fill(Color.vm.fill3))
                 }
                 .buttonStyle(.plain)
 

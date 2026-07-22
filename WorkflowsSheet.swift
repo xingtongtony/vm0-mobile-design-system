@@ -36,48 +36,62 @@ struct WorkflowsSheet: View {
                 }
                 .padding(.horizontal, 20)
             }
-            .padding(.top, 8).padding(.bottom, 6)
+            .padding(.top, 6).padding(.bottom, 4)
 
-            // 列表:原生 List
+            // 列表:原生 List(compact,行更紧凑,离上面更近)
             List {
                 Section {
                     ForEach(filtered) { w in
                         Button { onPick(w) } label: { row(w) }
                             .buttonStyle(.plain)
                             .listRowBackground(Color.vm.bgElevated)
+                            .listRowInsets(EdgeInsets(top: 2, leading: 14, bottom: 2, trailing: 14))
                     }
                 }
             }
             .listStyle(.insetGrouped)
+            .listSectionSpacing(.compact)
+            .contentMargins(.top, 6, for: .scrollContent)
             .scrollContentBackground(.hidden)
         }
-        // 原生搜索(系统 glass 搜索栏)
-        .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search workflows")
         .tint(Color.vm.tint)
         .vmSheetChrome(title: "Workflows", onClose: onClose)
+        .safeAreaInset(edge: .bottom) { bottomSearch }   // 搜索:底部悬浮 glass
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .presentationBackground(.ultraThinMaterial)
     }
 
+    // 底部悬浮搜索栏(glass)
+    private var bottomSearch: some View {
+        HStack(spacing: 10) {
+            VMIcon(name: "search", size: 16, color: .vm.labelTertiary)
+            TextField("Search workflows", text: $query)
+                .font(.vm.body).foregroundStyle(Color.vm.label).tint(Color.vm.tint)
+        }
+        .padding(.horizontal, 16).frame(height: 46)
+        .glassEffect(.regular, in: Capsule())
+        .padding(.horizontal, 16).padding(.bottom, 8)
+    }
+
     private func row(_ w: Workflow) -> some View {
         HStack(spacing: 12) {
-            // workflow 图标 tile(拼图)
-            VMIcon(name: "puzzle", size: 20, color: .vm.label)
-                .frame(width: 38, height: 38)
+            // workflow 图标 tile(route)
+            VMIcon(name: "route", size: 18, color: .vm.label)
+                .frame(width: 32, height: 32)
                 .background(Color.vm.fill3, in: RoundedRectangle(cornerRadius: VM.radius.md, style: .continuous))
             Text(w.name).font(.vm.body).foregroundStyle(Color.vm.label).lineLimit(1)
             Spacer(minLength: 8)
             Text(w.trigger)
                 .font(.vm.caption1).foregroundStyle(Color.vm.labelSecondary)
-                .padding(.horizontal, 10).frame(height: 24)
+                .padding(.horizontal, 9).frame(height: 22)
                 .background(Color.vm.fill3, in: Capsule())
             if w.isPublic {
-                VMIcon(name: "world", size: 16, color: .vm.link)
+                VMIcon(name: "world", size: 15, color: .vm.link)
             }
-            AgentAvatar(agent: Agent(id: w.name, name: w.name, avatar: w.agentAvatar, initial: "•"), size: 26)
+            AgentAvatar(agent: Agent(id: w.name, name: w.name, avatar: w.agentAvatar, initial: "•"), size: 24)
         }
-        .padding(.horizontal, 20).frame(height: 60)
+        .frame(height: 44)
         .contentShape(Rectangle())
     }
 }
