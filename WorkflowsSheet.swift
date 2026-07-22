@@ -54,24 +54,13 @@ struct WorkflowsSheet: View {
             .contentMargins(.top, 6, for: .scrollContent)
             .scrollContentBackground(.hidden)
         }
+        // 原生 .searchable —— iOS 26 在 iPhone 上默认渲染成底部悬浮 glass 搜索(同 Settings)
+        .searchable(text: $query, prompt: "Search workflows")
         .tint(Color.vm.tint)
         .vmSheetChrome(title: "Workflows", onClose: onClose)
-        .safeAreaInset(edge: .bottom) { bottomSearch }   // 搜索:底部悬浮 glass
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .presentationBackground(.ultraThinMaterial)
-    }
-
-    // 底部悬浮搜索栏(glass)
-    private var bottomSearch: some View {
-        HStack(spacing: 10) {
-            VMIcon(name: "search", size: 16, color: .vm.labelTertiary)
-            TextField("Search workflows", text: $query)
-                .font(.vm.body).foregroundStyle(Color.vm.label).tint(Color.vm.tint)
-        }
-        .padding(.horizontal, 16).frame(height: 46)
-        .glassEffect(.regular, in: Capsule())
-        .padding(.horizontal, 16).padding(.bottom, 8)
     }
 
     private func row(_ w: Workflow) -> some View {

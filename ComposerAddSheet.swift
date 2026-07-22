@@ -284,7 +284,7 @@ struct AllConnectorsSheet: View {
         }
         .listStyle(.insetGrouped)
         .scrollContentBackground(.hidden)
-        .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search integrations")
+        .searchable(text: $query, prompt: "Search integrations")
         .tint(Color.vm.tint)
         .vmSheetChrome(title: "Add connectors", onClose: onClose)
         .presentationDetents([.large])

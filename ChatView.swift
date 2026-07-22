@@ -6,14 +6,9 @@ import UIKit
 
 struct ChatView: View {
     @State private var messages: [ChatMessage] = ChatMessage.sampleThread
-    @State private var input = ""
     @State private var showThreads = false
     @State private var showAgentPicker = false
     @State private var agentID = Agent.zero.id
-    @State private var showAddSheet = false
-    @State private var showWorkflows = false
-    @State private var showConnectors = false
-    @FocusState private var inputFocused: Bool
 
     private var currentAgent: Agent {
         Agent.samples.first { $0.id == agentID } ?? .zero
@@ -42,7 +37,7 @@ struct ChatView: View {
         .defaultScrollAnchor(.bottom)
         .scrollDismissesKeyboard(.interactively)   // 下滑可交互收起键盘
         .safeAreaInset(edge: .top) { topBar }
-        .safeAreaInset(edge: .bottom) { inputBar }
+        .safeAreaInset(edge: .bottom) { ChatComposer(onSend: sendMessage) }
         .background(Color.vm.bgGrouped.ignoresSafeArea())
         .overlay(alignment: .leading) {
             SideDrawer(isOpen: $showThreads) {
@@ -127,7 +122,7 @@ struct ChatView: View {
                 spacing: 10
             ) {
                 ForEach(templates, id: \.self) { t in
-                    Button { send(t) } label: {
+                    Button { sendMessage(t) } label: {
                         Text(t)
                             .font(.vm.subhead)
                             .foregroundStyle(Color.vm.label)
@@ -202,91 +197,16 @@ struct ChatView: View {
             .background(Color.vm.fill2, in: RoundedRectangle(cornerRadius: 8, style: .continuous))
     }
 
-    // chatbox = 真 Liquid Glass;左 + 菜单(收敛附件/连接/模板)· 上下文 · 发送
-    private var inputBar: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            TextField("Message Zero…", text: $input, axis: .vertical)
-                .font(.vm.body)
-                .foregroundStyle(Color.vm.label)
-                .tint(Color.vm.tint)          // 光标 = 品牌橙
-                .lineLimit(1...5)
-                .focused($inputFocused)
-                .padding(.horizontal, 18)
-                .padding(.top, 16)
-
-            // 控件行:.center 共享中心线;间距收紧,更贴 chatbox 边缘,视觉更平衡
-            HStack(alignment: .center, spacing: 12) {
-                // + = 原生 bottom sheet;灰色圆形背景
-                Button { showAddSheet = true } label: {
-                    VMIcon(name: "plus", size: 20, color: .vm.label)
-                        .frame(width: 34, height: 34)
-                        .background(Circle().fill(Color.vm.fill3))
-                }
-                .buttonStyle(.plain)
-
-                // skill/workflow 入口 = route;灰色圆形背景
-                Button { showWorkflows = true } label: {
-                    VMIcon(name: "route", size: 19, color: .vm.label)
-                        .frame(width: 34, height: 34)
-                        .background(Circle().fill(Color.vm.fill3))
-                }
-                .buttonStyle(.plain)
-
-                // 已连接工具的叠加头像 → 打开 Connectors sheet
-                Button { showConnectors = true } label: {
-                    ConnectorStack(connectors: Connector.connected, size: 26)
-                }
-                .buttonStyle(.plain)
-
-                Spacer()
-
-                Button { send(input) } label: {
-                    Circle()
-                        .fill(Color.vm.tint)
-                        .frame(width: 38, height: 38)
-                        .overlay(VMIcon(name: "microphone", size: 18, color: .white))
-                }
-                .buttonStyle(.plain)
-            }
-            .padding(.leading, 12)
-            .padding(.trailing, 8)
-            .padding(.bottom, 8)
-        }
-        .tint(Color.vm.tint)
-        .glassEffect(.regular, in: RoundedRectangle(cornerRadius: 26, style: .continuous))
-        .contentShape(RoundedRectangle(cornerRadius: 26, style: .continuous))
-        .onTapGesture { inputFocused = true }   // 点输入区任意位置 → 聚焦调起键盘
-        .padding(.horizontal, 12)
-        .padding(.bottom, 8)
-        .sheet(isPresented: $showAddSheet) {
-            ComposerAddSheet(onClose: { showAddSheet = false })
-        }
-        .sheet(isPresented: $showWorkflows) {
-            WorkflowsSheet(
-                onClose: { showWorkflows = false },
-                onPick: { w in
-                    input = input.isEmpty ? w.name : input + " " + w.name
-                    showWorkflows = false
-                    inputFocused = true
-                }
-            )
-        }
-        .sheet(isPresented: $showConnectors) {
-            ConnectorsSheet(onClose: { showConnectors = false })
-        }
-    }
-
-    private func send(_ text: String) {
+    // 发送(上层持有 messages;composer 通过 onSend 回调进来)
+    private func sendMessage(_ text: String) {
         let t = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !t.isEmpty else { return }
         messages.append(ChatMessage(role: .user, text: t))
-        input = ""
         // POC:一句 canned 回执,让 flow 看起来是活的
         messages.append(ChatMessage(role: .assistant, text: "On it — let me take a look.", running: true))
     }
 
     private func startNewChat() {
         messages = []
-        input = ""
     }
 }

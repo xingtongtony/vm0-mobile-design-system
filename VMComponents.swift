@@ -99,6 +99,25 @@ struct GlassCircleButton: View {
     }
 }
 
+// MARK: - CircleIconButton
+// 圆形灰底图标钮(composer 的 + / skill 等)。默认 38,与发送钮同尺寸。
+struct CircleIconButton: View {
+    let icon: String
+    var size: CGFloat = 38
+    var iconSize: CGFloat = 20
+    var color: Color = .vm.label
+    var action: () -> Void
+
+    var body: some View {
+        Button(action: action) {
+            VMIcon(name: icon, size: iconSize, color: color)
+                .frame(width: size, height: size)
+                .background(Circle().fill(Color.vm.fill3))
+        }
+        .buttonStyle(.plain)
+    }
+}
+
 // MARK: - GlassPill
 // 玻璃胶囊按钮(如 agent 切换 pill)。label 内容自定义。
 struct GlassPill<Label: View>: View {
