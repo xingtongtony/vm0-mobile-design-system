@@ -143,11 +143,11 @@ struct VMSheetHeader: View {
     var onClose: () -> Void
     var body: some View {
         ZStack {
-            Text(title).font(.vm.title2).foregroundStyle(Color.vm.label)   // 居中
+            Text(title).font(.vm.title3).foregroundStyle(Color.vm.label)   // 居中,semibold 20(比之前小且细)
             HStack {
                 Button { onClose() } label: {
-                    VMIcon(name: "x", size: 14, color: .vm.labelSecondary)
-                        .frame(width: 30, height: 30)
+                    VMIcon(name: "x", size: 16, color: .vm.labelSecondary)
+                        .frame(width: 36, height: 36)               // 关闭键调大
                         .background(Color.vm.fill3, in: Circle())
                 }
                 .buttonStyle(.plain)

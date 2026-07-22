@@ -195,19 +195,6 @@ struct CameraSheet: View {
     }
 }
 
-// 描边圆角方框 + 图标(web 上的方块 icon 样式,不用橙色)
-private struct SquareIconTile: View {
-    let icon: String
-    var body: some View {
-        VMIcon(name: icon, size: 16, color: .vm.label)
-            .frame(width: 30, height: 30)
-            .overlay(
-                RoundedRectangle(cornerRadius: VM.radius.sm, style: .continuous)
-                    .strokeBorder(Color.vm.separator, lineWidth: 1.5)
-            )
-    }
-}
-
 // 连接器行:未连 → 灰色 "Connect"(与名字同字号);已连 → 右箭头(更多操作)
 private struct ConnectorRow: View {
     let c: Connector
@@ -239,7 +226,8 @@ struct ConnectorsSheet: View {
                 Section {
                     Button { showAll = true } label: {
                         HStack(spacing: 12) {
-                            SquareIconTile(icon: "plus")
+                            VMIcon(name: "plus", size: 22, color: .vm.label)
+                                .frame(width: 28, height: 28)
                             Text("Add connectors").font(.vm.body).foregroundStyle(Color.vm.label)
                             Spacer()
                             VMIcon(name: "chevron-right", size: 16, color: .vm.labelTertiary)
