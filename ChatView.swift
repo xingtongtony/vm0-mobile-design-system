@@ -9,7 +9,17 @@ struct ChatView: View {
     @State private var input = ""
     @State private var showThreads = false
     @State private var showAgentPicker = false
+    @State private var showAddMenu = false
     @State private var agentID = Agent.zero.id
+
+    // composer + 菜单项(图标 = 我们的 Tabler,同 vm0 web:template/route 等)
+    private let addItems: [(icon: String, label: String)] = [
+        ("paperclip", "Attach file"),
+        ("photo", "Photo"),
+        ("plug", "Add connector"),
+        ("template", "Templates"),
+        ("route", "Create workflow"),
+    ]
 
     private var currentAgent: Agent {
         Agent.samples.first { $0.id == agentID } ?? .zero
@@ -114,6 +124,32 @@ struct ChatView: View {
         .background(Color.vm.bgElevated)
     }
 
+    // composer + 的自绘下拉 —— 我们的 Tabler 图标,深色(非纯黑)
+    private var addMenu: some View {
+        VStack(spacing: 0) {
+            ForEach(Array(addItems.enumerated()), id: \.offset) { idx, item in
+                Button {
+                    showAddMenu = false
+                } label: {
+                    HStack(spacing: 12) {
+                        VMIcon(name: item.icon, size: 20, color: .vm.label)
+                        Text(item.label).font(.vm.body).foregroundStyle(Color.vm.label)
+                        Spacer(minLength: 24)
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 11)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                if idx < addItems.count - 1 {
+                    Divider().overlay(Color.vm.separatorHairline)
+                }
+            }
+        }
+        .frame(width: 230)
+        .background(Color.vm.bgElevated)
+    }
+
     // 空态:agent 头像 + 招呼 + 模板 tile(点一下直接发)
     private var emptyState: some View {
         VStack(spacing: 24) {
@@ -211,14 +247,13 @@ struct ChatView: View {
                 .lineLimit(1...5)
 
             HStack(spacing: 18) {
-                // + = 统一"添加"菜单(原生 Menu;附件吸收进来)
-                Menu {
-                    Button { } label: { Label("Attach file", systemImage: "paperclip") }
-                    Button { } label: { Label("Photo", systemImage: "photo") }
-                    Button { } label: { Label("Add connector", systemImage: "bolt") }
-                    Button { } label: { Label("Templates", systemImage: "square.grid.2x2") }
-                } label: {
+                // + = 统一"添加"菜单(自绘 popover,用我们的 Tabler 图标)
+                Button { showAddMenu = true } label: {
                     VMIcon(name: "plus", size: 22, color: .vm.label)
+                }
+                .buttonStyle(.plain)
+                .popover(isPresented: $showAddMenu) {
+                    addMenu.presentationCompactAdaptation(.popover)
                 }
 
                 // 上下文/connector 常驻(Zero 招牌:这次让它用哪个 repo / 收件箱)
