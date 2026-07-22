@@ -21,23 +21,28 @@ struct VMIcon: View {
     }
 }
 
-// Zero 头像 —— 官方手绘吉祥物(源自 vm0-marketing / vm0 desktop 的 zero-avatar.png)
-// 透明底插画,坐在自适应的 tintSubtle 圆角底上;缺图时回退小笑脸。
-struct ZeroAvatar: View {
+// Agent 头像 —— 官方插画直接显示,无背景、无裁切(Zero = 手绘吉祥物 zero-avatar.png)。
+// 没有头像资源的 agent 回退成首字母圆片。
+struct AgentAvatar: View {
+    let agent: Agent
     var size: CGFloat = 40
 
     var body: some View {
         Group {
-            if let path = Bundle.main.path(forResource: "zero-avatar", ofType: "png"),
+            if let path = Bundle.main.path(forResource: agent.avatar, ofType: "png"),
                let ui = UIImage(contentsOfFile: path) {
                 Image(uiImage: ui).resizable().scaledToFit()
             } else {
-                VMIcon(name: "mood-smile", size: size * 0.55, color: .white)
+                Circle()
+                    .fill(Color.vm.fill3)
+                    .overlay(
+                        Text(agent.initial)
+                            .font(.system(size: size * 0.42, weight: .semibold))
+                            .foregroundStyle(Color.vm.labelSecondary)
+                    )
             }
         }
         .frame(width: size, height: size)
-        .background(Color.vm.tintSubtle)
-        .clipShape(RoundedRectangle(cornerRadius: size * 0.275, style: .continuous))
     }
 }
 
@@ -51,7 +56,11 @@ struct ChatView: View {
     @State private var messages: [ChatMessage] = ChatMessage.sampleThread
     @State private var input = ""
     @State private var showThreads = false
-    @State private var threadTitle = "Workspace bug triage"
+    @State private var agentID = Agent.zero.id
+
+    private var currentAgent: Agent {
+        Agent.samples.first { $0.id == agentID } ?? .zero
+    }
 
     // 空态 starter 模板(解决"用户不知道 Zero 能干嘛")
     private let templates = [
@@ -79,29 +88,47 @@ struct ChatView: View {
         .background(Color.vm.bgGrouped.ignoresSafeArea())
         .sheet(isPresented: $showThreads) {
             ThreadsView(
-                onSelect: { t in
-                    threadTitle = t.title
-                    messages = ChatMessage.sampleThread   // POC:任选一条都载入同一段样例
-                },
+                onSelect: { _ in messages = ChatMessage.sampleThread },
                 onNew: { startNewChat() }
             )
         }
     }
 
-    // 顶栏:threads 抽屉 · 当前标题 · 新建(照桌面:左找我的东西 / 右开新的)
+    // 顶栏:threads 圆钮 · agent 切换 pill(无标题) · 新建圆钮
     private var topBar: some View {
-        HStack {
+        HStack(spacing: 10) {
             glassCircle("list") { showThreads = true }
-            Spacer()
-            Text(messages.isEmpty ? "New chat" : threadTitle)
-                .font(.vm.headline)
-                .foregroundStyle(Color.vm.label)
-                .lineLimit(1)
+            agentSwitcher
             Spacer()
             glassCircle("plus") { startNewChat() }
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 10)
+    }
+
+    // agent 切换入口 —— 原生 Menu(Picker 自动打勾),label 是玻璃 pill
+    private var agentSwitcher: some View {
+        Menu {
+            Picker("Agent", selection: $agentID) {
+                ForEach(Agent.samples) { a in
+                    Text(a.name).tag(a.id)
+                }
+            }
+        } label: {
+            HStack(spacing: 8) {
+                AgentAvatar(agent: currentAgent, size: 24)
+                Text(currentAgent.name)
+                    .font(.vm.headline)
+                    .foregroundStyle(Color.vm.label)
+                Image(systemName: "chevron.down")   // 占位:待换成 Tabler chevron
+                    .font(.system(size: 12, weight: .semibold))
+                    .foregroundStyle(Color.vm.labelSecondary)
+            }
+            .padding(.leading, 6)
+            .padding(.trailing, 12)
+            .frame(height: 40)
+            .glassEffect(.regular.interactive(), in: Capsule())
+        }
     }
 
     // header button = 真 Liquid Glass(iOS 26 .glassEffect)
@@ -114,10 +141,10 @@ struct ChatView: View {
         .buttonStyle(.plain)
     }
 
-    // 空态:Zero 头像 + 招呼 + 模板 tile(点一下直接发)
+    // 空态:agent 头像 + 招呼 + 模板 tile(点一下直接发)
     private var emptyState: some View {
         VStack(spacing: 24) {
-            ZeroAvatar(size: 64)
+            AgentAvatar(agent: currentAgent, size: 64)
             Text("How can I help, Tong?")
                 .font(.vm.title2)
                 .foregroundStyle(Color.vm.label)
@@ -163,35 +190,31 @@ struct ChatView: View {
         }
     }
 
+    // assistant:头像在正文上方(VStack),无背景
     private func assistantBlock(_ m: ChatMessage) -> some View {
-        HStack(alignment: .top, spacing: 12) {
+        VStack(alignment: .leading, spacing: 16) {
             if m.groupStart {
-                ZeroAvatar(size: 32)
-            } else {
-                Color.clear.frame(width: 32, height: 0)
+                AgentAvatar(agent: currentAgent, size: 40)
             }
-            VStack(alignment: .leading, spacing: 14) {
-                Text(m.text)
-                    .font(.vm.body)
-                    .foregroundStyle(Color.vm.label)
-                    .fixedSize(horizontal: false, vertical: true)
+            Text(m.text)
+                .font(.vm.body)
+                .foregroundStyle(Color.vm.label)
+                .fixedSize(horizontal: false, vertical: true)
 
-                if !m.chips.isEmpty {
-                    HStack(spacing: 10) {
-                        ForEach(m.chips, id: \.self) { chip($0) }
-                    }
-                }
-                if m.running {
-                    HStack(spacing: 8) {
-                        RunningDot()
-                        Text("Running…").font(.vm.footnote).foregroundStyle(Color.vm.tint)
-                    }
-                }
-                if let d = m.delivered {
-                    Text(d).font(.vm.footnote).italic().foregroundStyle(Color.vm.labelTertiary)
+            if !m.chips.isEmpty {
+                HStack(spacing: 10) {
+                    ForEach(m.chips, id: \.self) { chip($0) }
                 }
             }
-            Spacer(minLength: 0)
+            if m.running {
+                HStack(spacing: 8) {
+                    RunningDot()
+                    Text("Running…").font(.vm.footnote).foregroundStyle(Color.vm.tint)
+                }
+            }
+            if let d = m.delivered {
+                Text(d).font(.vm.footnote).italic().foregroundStyle(Color.vm.labelTertiary)
+            }
         }
     }
 
@@ -251,7 +274,6 @@ struct ChatView: View {
     private func send(_ text: String) {
         let t = text.trimmingCharacters(in: .whitespacesAndNewlines)
         guard !t.isEmpty else { return }
-        if messages.isEmpty { threadTitle = t }
         messages.append(ChatMessage(role: .user, text: t))
         input = ""
         // POC:一句 canned 回执,让 flow 看起来是活的
@@ -261,6 +283,5 @@ struct ChatView: View {
     private func startNewChat() {
         messages = []
         input = ""
-        threadTitle = "New chat"
     }
 }

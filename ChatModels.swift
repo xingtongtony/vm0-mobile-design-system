@@ -1,5 +1,22 @@
 import Foundation
 
+// Agent —— 顶栏 pill 的切换目标。avatar = bundle 里的 png 名(Zero 用官方 zero-avatar);
+// 其它 agent 暂无头像资源,AgentAvatar 回退成首字母圆片。
+struct Agent: Identifiable, Hashable {
+    let id: String
+    var name: String
+    var avatar: String
+    var initial: String
+
+    static let zero = Agent(id: "zero", name: "Zero", avatar: "zero-avatar", initial: "Z")
+    static let samples: [Agent] = [
+        zero,
+        Agent(id: "research", name: "Researcher", avatar: "agent-research", initial: "R"),
+        Agent(id: "coder", name: "Coder", avatar: "agent-coder", initial: "C"),
+        Agent(id: "ops", name: "Ops", avatar: "agent-ops", initial: "O"),
+    ]
+}
+
 // 聊天消息(POC 假数据)。role 决定渲染:user = 气泡靠右,assistant = 头像 + 平铺正文。
 struct ChatMessage: Identifiable {
     enum Role { case user, assistant }
