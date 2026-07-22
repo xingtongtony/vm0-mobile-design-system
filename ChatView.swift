@@ -138,15 +138,15 @@ struct ChatView: View {
                         Spacer()
                     }
                     .padding(.horizontal, 20)
-                    .frame(height: 56)
+                    .frame(height: 48)
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
             }
         }
-        .padding(.top, 16)
+        .padding(.top, 8)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .presentationDetents([.height(CGFloat(addItems.count * 56 + 44))])
+        .presentationDetents([.height(CGFloat(addItems.count * 48 + 32))])
         .presentationDragIndicator(.visible)
         .presentationBackground(.ultraThinMaterial)   // 半透明毛玻璃,透出模糊的聊天
     }
