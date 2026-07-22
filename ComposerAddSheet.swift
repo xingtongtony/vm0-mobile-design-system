@@ -195,17 +195,20 @@ struct CameraSheet: View {
     }
 }
 
-// 已连接标记(绿勾 + Connected)
-private struct ConnectedTag: View {
+// 描边圆角方框 + 图标(web 上的方块 icon 样式,不用橙色)
+private struct SquareIconTile: View {
+    let icon: String
     var body: some View {
-        HStack(spacing: 5) {
-            VMIcon(name: "check", size: 13, color: .vm.success)
-            Text("Connected").font(.vm.caption1).foregroundStyle(Color.vm.success)
-        }
+        VMIcon(name: icon, size: 16, color: .vm.label)
+            .frame(width: 30, height: 30)
+            .overlay(
+                RoundedRectangle(cornerRadius: VM.radius.sm, style: .continuous)
+                    .strokeBorder(Color.vm.separator, lineWidth: 1.5)
+            )
     }
 }
 
-// 连接器行(图标 + 名字 + 已连/未连状态)
+// 连接器行:未连 → 灰色 "Connect"(与名字同字号);已连 → 右箭头(更多操作)
 private struct ConnectorRow: View {
     let c: Connector
     var body: some View {
@@ -214,17 +217,17 @@ private struct ConnectorRow: View {
             Text(c.name).font(.vm.body).foregroundStyle(Color.vm.label)
             Spacer()
             if c.connected {
-                ConnectedTag()
+                VMIcon(name: "chevron-right", size: 16, color: .vm.labelTertiary)
             } else {
-                Text("Add").font(.vm.subhead).foregroundStyle(Color.vm.tint)
+                Text("Connect").font(.vm.body).foregroundStyle(Color.vm.labelSecondary)
             }
         }
-        .padding(.horizontal, 20).frame(height: 52)
+        .frame(height: 44)
         .contentShape(Rectangle())
     }
 }
 
-// Connectors —— 已连接的工具 + "Add connectors" 入口
+// Connectors —— 原生 group(insetGrouped):Add connectors 一组 + 推荐 integrations 一组
 struct ConnectorsSheet: View {
     var onClose: () -> Void
     @State private var showAll = false
@@ -232,35 +235,33 @@ struct ConnectorsSheet: View {
     var body: some View {
         VStack(spacing: 0) {
             VMSheetHeader(title: "Connectors", onClose: onClose)
-            ScrollView {
-                VStack(spacing: 0) {
-                    // Add connectors 入口 → 全部集成
+            List {
+                Section {
                     Button { showAll = true } label: {
                         HStack(spacing: 12) {
-                            VMIcon(name: "plus", size: 20, color: .vm.tint)
-                                .frame(width: 28, height: 28)
-                                .background(Color.vm.tintSubtle, in: Circle())
+                            SquareIconTile(icon: "plus")
                             Text("Add connectors").font(.vm.body).foregroundStyle(Color.vm.label)
                             Spacer()
                             VMIcon(name: "chevron-right", size: 16, color: .vm.labelTertiary)
                         }
-                        .padding(.horizontal, 20).frame(height: 56)
                         .contentShape(Rectangle())
                     }
                     .buttonStyle(.plain)
+                    .listRowBackground(Color.vm.bgElevated)
+                }
 
-                    Text("Connected")
-                        .font(.vm.footnote).foregroundStyle(Color.vm.labelSecondary)
-                        .frame(maxWidth: .infinity, alignment: .leading)
-                        .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 2)
-
-                    ForEach(Connector.connected) { c in
+                Section {
+                    ForEach(Connector.samples) { c in
                         Button { onClose() } label: { ConnectorRow(c: c) }
                             .buttonStyle(.plain)
+                            .listRowBackground(Color.vm.bgElevated)
                     }
+                } header: {
+                    Text("Recommended").font(.vm.footnote).foregroundStyle(Color.vm.labelSecondary)
                 }
-                .padding(.bottom, 24)
             }
+            .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .presentationDetents([.medium, .large])
@@ -292,15 +293,17 @@ struct AllConnectorsSheet: View {
             .background(Color.vm.fill3, in: RoundedRectangle(cornerRadius: VM.radius.md, style: .continuous))
             .padding(.horizontal, 20).padding(.bottom, 8)
 
-            ScrollView {
-                VStack(spacing: 0) {
+            List {
+                Section {
                     ForEach(filtered) { c in
                         Button { onClose() } label: { ConnectorRow(c: c) }
                             .buttonStyle(.plain)
+                            .listRowBackground(Color.vm.bgElevated)
                     }
                 }
-                .padding(.bottom, 24)
             }
+            .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .presentationDetents([.large])

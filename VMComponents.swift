@@ -137,20 +137,22 @@ struct ConnectorStack: View {
 }
 
 // MARK: - VMSheetHeader
-// bottom sheet 通用头:标题 + 右上关闭(圆形 x)。
+// bottom sheet 通用头:关闭键在左,标题居中(导航栏式)。关闭是原生 SwiftUI Button。
 struct VMSheetHeader: View {
     let title: String
     var onClose: () -> Void
     var body: some View {
-        HStack {
-            Text(title).font(.vm.title2).foregroundStyle(Color.vm.label)
-            Spacer()
-            Button { onClose() } label: {
-                VMIcon(name: "x", size: 14, color: .vm.labelSecondary)
-                    .frame(width: 30, height: 30)
-                    .background(Color.vm.fill3, in: Circle())
+        ZStack {
+            Text(title).font(.vm.title2).foregroundStyle(Color.vm.label)   // 居中
+            HStack {
+                Button { onClose() } label: {
+                    VMIcon(name: "x", size: 14, color: .vm.labelSecondary)
+                        .frame(width: 30, height: 30)
+                        .background(Color.vm.fill3, in: Circle())
+                }
+                .buttonStyle(.plain)
+                Spacer()
             }
-            .buttonStyle(.plain)
         }
         .padding(.horizontal, 20)
         .padding(.top, 18)
