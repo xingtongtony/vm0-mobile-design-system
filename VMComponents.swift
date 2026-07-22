@@ -143,7 +143,7 @@ struct VMSheetHeader: View {
     var onClose: () -> Void
     var body: some View {
         HStack {
-            Text(title).font(.vm.title3).foregroundStyle(Color.vm.label)
+            Text(title).font(.vm.title2).foregroundStyle(Color.vm.label)
             Spacer()
             Button { onClose() } label: {
                 VMIcon(name: "x", size: 14, color: .vm.labelSecondary)
