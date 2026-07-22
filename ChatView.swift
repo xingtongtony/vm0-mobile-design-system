@@ -56,6 +56,7 @@ struct ChatView: View {
     @State private var messages: [ChatMessage] = ChatMessage.sampleThread
     @State private var input = ""
     @State private var showThreads = false
+    @State private var showAgentPicker = false
     @State private var agentID = Agent.zero.id
 
     private var currentAgent: Agent {
@@ -106,15 +107,9 @@ struct ChatView: View {
         .padding(.vertical, 10)
     }
 
-    // agent 切换入口 —— 原生 Menu(Picker 自动打勾),label 是玻璃 pill
+    // agent 切换入口 —— 玻璃 pill,点开是原生 .popover 下拉(每行带真头像 + 选中打勾)
     private var agentSwitcher: some View {
-        Menu {
-            Picker("Agent", selection: $agentID) {
-                ForEach(Agent.samples) { a in
-                    Text(a.name).tag(a.id)
-                }
-            }
-        } label: {
+        Button { showAgentPicker = true } label: {
             HStack(spacing: 8) {
                 AgentAvatar(agent: currentAgent, size: 24)
                 Text(currentAgent.name)
@@ -129,6 +124,42 @@ struct ChatView: View {
             .frame(height: 40)
             .glassEffect(.regular.interactive(), in: Capsule())
         }
+        .buttonStyle(.plain)
+        .popover(isPresented: $showAgentPicker) {
+            agentPicker.presentationCompactAdaptation(.popover)
+        }
+    }
+
+    // 下拉内容 —— 原生行,头像常显(不用等选完)
+    private var agentPicker: some View {
+        VStack(spacing: 0) {
+            ForEach(Array(Agent.samples.enumerated()), id: \.element.id) { idx, a in
+                Button {
+                    agentID = a.id
+                    showAgentPicker = false
+                } label: {
+                    HStack(spacing: 10) {
+                        AgentAvatar(agent: a, size: 30)
+                        Text(a.name).font(.vm.headline).foregroundStyle(Color.vm.label)
+                        Spacer(minLength: 24)
+                        if a.id == agentID {
+                            Image(systemName: "checkmark")
+                                .font(.system(size: 13, weight: .semibold))
+                                .foregroundStyle(Color.vm.tint)
+                        }
+                    }
+                    .padding(.horizontal, 14)
+                    .padding(.vertical, 10)
+                    .contentShape(Rectangle())
+                }
+                .buttonStyle(.plain)
+                if idx < Agent.samples.count - 1 {
+                    Divider().overlay(Color.vm.separatorHairline)
+                }
+            }
+        }
+        .frame(width: 240)
+        .background(Color.vm.bgElevated)
     }
 
     // header button = 真 Liquid Glass(iOS 26 .glassEffect)
