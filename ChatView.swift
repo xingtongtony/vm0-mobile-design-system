@@ -128,7 +128,7 @@ struct ChatView: View {
     // composer + 的原生 bottom sheet —— 内容自排,图标 = 我们的 Tabler + .vm.label 深色
     private var addSheet: some View {
         VStack(spacing: 0) {
-            ForEach(Array(addItems.enumerated()), id: \.offset) { idx, item in
+            ForEach(Array(addItems.enumerated()), id: \.offset) { _, item in
                 Button {
                     showAddSheet = false
                 } label: {
@@ -142,9 +142,6 @@ struct ChatView: View {
                     .contentShape(Rectangle())
                 }
                 .buttonStyle(.plain)
-                if idx < addItems.count - 1 {
-                    Divider().overlay(Color.vm.separatorHairline).padding(.leading, 56)
-                }
             }
         }
         .padding(.top, 16)
