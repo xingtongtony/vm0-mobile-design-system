@@ -1,0 +1,40 @@
+# XcodeGen 配置 —— 把当前这些源文件/资源生成一个可在真机运行的 Xcode 工程。
+# 用法(在 Mac 上):
+#   brew install xcodegen        # 只需一次
+#   xcodegen generate            # 生成 VM0Chat.xcodeproj
+#   open VM0Chat.xcodeproj       # 打开后选 Team + 你的 iPhone,Run
+name: VM0Chat
+options:
+  bundleIdPrefix: ai.vm0
+  deploymentTarget:
+    iOS: "26.0"
+  createIntermediateGroups: true
+settings:
+  base:
+    MARKETING_VERSION: "0.1"
+    CURRENT_PROJECT_VERSION: "1"
+targets:
+  VM0Chat:
+    type: application
+    platform: iOS
+    sources:
+      - path: .
+        # 只纳入 app 源与资源;排除工具/构建产物/文档
+        excludes:
+          - "makeicons.swift"      # macOS 工具(import AppKit),不进 app
+          - "build.sh"
+          - "project.yml"
+          - "*.md"
+          - ".gitignore"
+          - "VM0Chat"              # swiftc 手搓产物
+          - "VM0Chat.app"
+          - "*.xcodeproj"
+          - "DerivedData"
+    settings:
+      base:
+        PRODUCT_BUNDLE_IDENTIFIER: ai.vm0.chatpoc
+        INFOPLIST_FILE: Info.plist
+        GENERATE_INFOPLIST_FILE: NO
+        TARGETED_DEVICE_FAMILY: "1"      # iPhone
+        CODE_SIGN_STYLE: Automatic       # 用 Xcode 自动签名(填你的 Team 即可)
+        SWIFT_VERSION: "5.0"
