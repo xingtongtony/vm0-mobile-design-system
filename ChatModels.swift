@@ -16,6 +16,23 @@ struct Agent: Identifiable, Hashable {
     ]
 }
 
+// Connector —— vm0 集成(图标 = 从 static.vm0.io 拉下的品牌 SVG 渲成的 connector-<id>.png)。
+struct Connector: Identifiable, Hashable {
+    let id: String
+    var name: String
+    var icon: String
+
+    static let samples: [Connector] = [
+        .init(id: "github", name: "GitHub", icon: "connector-github"),
+        .init(id: "notion", name: "Notion", icon: "connector-notion"),
+        .init(id: "gmail", name: "Gmail", icon: "connector-gmail"),
+        .init(id: "linear", name: "Linear", icon: "connector-linear"),
+        .init(id: "google-drive", name: "Google Drive", icon: "connector-google-drive"),
+        .init(id: "figma", name: "Figma", icon: "connector-figma"),
+        .init(id: "discord", name: "Discord", icon: "connector-discord"),
+    ]
+}
+
 // 聊天消息(POC 假数据)。role 决定渲染:user = 气泡靠右,assistant = 头像 + 平铺正文。
 struct ChatMessage: Identifiable {
     enum Role { case user, assistant }

@@ -29,6 +29,25 @@ struct VMIcon: View {
     }
 }
 
+// MARK: - VMImage
+// 彩色原图(不做 template 着色)—— 用于 connector / 品牌图标等需要保留原色的图。
+struct VMImage: View {
+    let name: String
+    var size: CGFloat = 28
+
+    var body: some View {
+        Group {
+            if let path = Bundle.main.path(forResource: name, ofType: "png"),
+               let ui = UIImage(contentsOfFile: path) {
+                Image(uiImage: ui).resizable().scaledToFit()
+            } else {
+                RoundedRectangle(cornerRadius: 6, style: .continuous).fill(Color.vm.fill3)
+            }
+        }
+        .frame(width: size, height: size)
+    }
+}
+
 // MARK: - AgentAvatar
 // vm0 官方 agent 插画,无背景、无裁切;缺图回退首字母圆片。
 struct AgentAvatar: View {

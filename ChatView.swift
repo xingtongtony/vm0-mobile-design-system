@@ -13,15 +13,6 @@ struct ChatView: View {
     @State private var showAddSheet = false
     @FocusState private var inputFocused: Bool
 
-    // composer + 菜单项(图标 = 我们的 Tabler,同 vm0 web:template/route 等)
-    private let addItems: [(icon: String, label: String)] = [
-        ("paperclip", "Attach file"),
-        ("photo", "Photo"),
-        ("plug", "Add connector"),
-        ("template", "Templates"),
-        ("route", "Create workflow"),
-    ]
-
     private var currentAgent: Agent {
         Agent.samples.first { $0.id == agentID } ?? .zero
     }
@@ -123,32 +114,6 @@ struct ChatView: View {
         }
         .frame(width: 240)
         .background(Color.vm.bgElevated)
-    }
-
-    // composer + 的原生 bottom sheet —— 内容自排,图标 = 我们的 Tabler + .vm.label 深色
-    private var addSheet: some View {
-        VStack(spacing: 0) {
-            ForEach(Array(addItems.enumerated()), id: \.offset) { _, item in
-                Button {
-                    showAddSheet = false
-                } label: {
-                    HStack(spacing: 14) {
-                        VMIcon(name: item.icon, size: 22, color: .vm.label)
-                        Text(item.label).font(.vm.body).foregroundStyle(Color.vm.label)
-                        Spacer()
-                    }
-                    .padding(.horizontal, 20)
-                    .frame(height: 48)
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-            }
-        }
-        .padding(.top, 8)
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .presentationDetents([.height(CGFloat(addItems.count * 48 + 32))])
-        .presentationDragIndicator(.visible)
-        .presentationBackground(.ultraThinMaterial)   // 半透明毛玻璃,透出模糊的聊天
     }
 
     // 空态:agent 头像 + 招呼 + 模板 tile(点一下直接发)
@@ -258,7 +223,9 @@ struct ChatView: View {
                     VMIcon(name: "plus", size: 22, color: .vm.label)
                 }
                 .buttonStyle(.plain)
-                .sheet(isPresented: $showAddSheet) { addSheet }
+                .sheet(isPresented: $showAddSheet) {
+                    ComposerAddSheet(onClose: { showAddSheet = false })
+                }
 
                 Button { } label: { VMIcon(name: "plug", size: 22, color: .vm.label) }
                     .buttonStyle(.plain)
