@@ -9,7 +9,6 @@ struct ChatView: View {
     @State private var input = ""
     @State private var showThreads = false
     @State private var showAgentPicker = false
-    @State private var showAddMenu = false
     @State private var agentID = Agent.zero.id
     @FocusState private var inputFocused: Bool
 
@@ -125,30 +124,13 @@ struct ChatView: View {
         .background(Color.vm.bgElevated)
     }
 
-    // composer + 的自绘下拉 —— 我们的 Tabler 图标,深色(非纯黑)
-    private var addMenu: some View {
-        VStack(spacing: 0) {
-            ForEach(Array(addItems.enumerated()), id: \.offset) { idx, item in
-                Button {
-                    showAddMenu = false
-                } label: {
-                    HStack(spacing: 12) {
-                        VMIcon(name: item.icon, size: 20, color: .vm.label)
-                        Text(item.label).font(.vm.body).foregroundStyle(Color.vm.label)
-                        Spacer(minLength: 24)
-                    }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 11)
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                if idx < addItems.count - 1 {
-                    Divider().overlay(Color.vm.separatorHairline)
-                }
-            }
+    // 把 bundle 里的 Tabler PNG 作为 template UIImage 喂进原生 Menu 的 Label
+    private func menuIcon(_ name: String) -> Image {
+        if let path = Bundle.main.path(forResource: name, ofType: "png"),
+           let ui = UIImage(contentsOfFile: path) {
+            return Image(uiImage: ui.withRenderingMode(.alwaysTemplate))
         }
-        .frame(width: 230)
-        .background(Color.vm.bgElevated)
+        return Image(systemName: "questionmark")
     }
 
     // 空态:agent 头像 + 招呼 + 模板 tile(点一下直接发)
@@ -253,12 +235,17 @@ struct ChatView: View {
             // 控件行:三者 .center 共享中心线;下内边距 10 抵消圆钮撑高的 8pt,
             // 使 + 的左边距 ≈ 下边距;橘色钮 trailing/bottom 收到 10 更贴角
             HStack(alignment: .center, spacing: 18) {
-                Button { showAddMenu = true } label: {
+                // + = 原生系统 Menu,图标用我们的 Tabler(以 UIImage template 喂入)
+                Menu {
+                    ForEach(Array(addItems.enumerated()), id: \.offset) { _, item in
+                        Button {
+                            // action placeholder
+                        } label: {
+                            Label { Text(item.label) } icon: { menuIcon(item.icon) }
+                        }
+                    }
+                } label: {
                     VMIcon(name: "plus", size: 22, color: .vm.label)
-                }
-                .buttonStyle(.plain)
-                .popover(isPresented: $showAddMenu) {
-                    addMenu.presentationCompactAdaptation(.popover)
                 }
 
                 Button { } label: { VMIcon(name: "plug", size: 22, color: .vm.label) }
