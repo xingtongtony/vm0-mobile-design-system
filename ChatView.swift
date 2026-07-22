@@ -38,6 +38,7 @@ struct ChatView: View {
             }
         }
         .defaultScrollAnchor(.bottom)
+        .scrollDismissesKeyboard(.interactively)   // 下滑可交互收起键盘
         .safeAreaInset(edge: .top) { topBar }
         .safeAreaInset(edge: .bottom) { inputBar }
         .background(Color.vm.bgGrouped.ignoresSafeArea())
