@@ -149,10 +149,9 @@ struct ChatView: View {
         }
         .padding(.top, 16)
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
-        .background(Color.vm.bgElevated)
         .presentationDetents([.height(CGFloat(addItems.count * 56 + 44))])
         .presentationDragIndicator(.visible)
-        .presentationBackground(Color.vm.bgElevated)
+        .presentationBackground(.ultraThinMaterial)   // 半透明毛玻璃,透出模糊的聊天
     }
 
     // 空态:agent 头像 + 招呼 + 模板 tile(点一下直接发)
