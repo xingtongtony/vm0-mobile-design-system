@@ -29,39 +29,29 @@ struct ComposerAddSheet: View {
     ]
 
     var body: some View {
-        ScrollView {
-            VStack(alignment: .leading, spacing: 16) {
-                // 头:标题 + 关闭
-                HStack {
-                    Text("Options").font(.vm.title2).foregroundStyle(Color.vm.label)
-                    Spacer()
-                    Button { onClose() } label: {
-                        VMIcon(name: "x", size: 14, color: .vm.labelSecondary)
-                            .frame(width: 30, height: 30)
-                            .background(Color.vm.fill3, in: Circle())
+        VStack(spacing: 0) {
+            // 用共用的 VMSheetHeader,和其它 sheet 完全一致(不再手写内联标题)
+            VMSheetHeader(title: "Options", onClose: onClose)
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    // 三张小卡(Connectors 已移到下面列表)
+                    HStack(spacing: 10) {
+                        card("photo", "Image") { sub = .image }
+                        card("camera", "Camera") { sub = .camera }
+                        card("file-plus", "File") { showFileImporter = true }
                     }
-                    .buttonStyle(.plain)
-                }
 
-                // 三张小卡(Connectors 已移到下面列表)
-                HStack(spacing: 10) {
-                    card("photo", "Image") { sub = .image }
-                    card("camera", "Camera") { sub = .camera }
-                    card("file-plus", "File") { showFileImporter = true }
-                }
-
-                // 下面的选项列表
-                VStack(spacing: 0) {
-                    ForEach(options) { opt in
-                        Button { handleOption(opt) } label: { optionRow(opt) }
-                            .buttonStyle(.plain)
+                    // 下面的选项列表
+                    VStack(spacing: 0) {
+                        ForEach(options) { opt in
+                            Button { handleOption(opt) } label: { optionRow(opt) }
+                                .buttonStyle(.plain)
+                        }
                     }
                 }
-                .padding(.top, 2)
+                .padding(.horizontal, 20)
+                .padding(.bottom, 20)
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 18)
-            .padding(.bottom, 20)
         }
         .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
         .presentationDetents([.medium, .large])
