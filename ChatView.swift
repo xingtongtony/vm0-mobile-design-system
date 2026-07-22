@@ -74,9 +74,7 @@ struct ChatView: View {
                 Text(currentAgent.name)
                     .font(.vm.headline)
                     .foregroundStyle(Color.vm.label)
-                Image(systemName: "chevron.down")   // 占位:待换成 Tabler chevron
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundStyle(Color.vm.labelSecondary)
+                VMIcon(name: "chevron-down", size: 14, color: .vm.labelSecondary)
             }
         }
         .popover(isPresented: $showAgentPicker) {
@@ -97,9 +95,7 @@ struct ChatView: View {
                         Text(a.name).font(.vm.headline).foregroundStyle(Color.vm.label)
                         Spacer(minLength: 24)
                         if a.id == agentID {
-                            Image(systemName: "checkmark")
-                                .font(.system(size: 13, weight: .semibold))
-                                .foregroundStyle(Color.vm.tint)
+                            VMIcon(name: "check", size: 16, color: .vm.tint)
                         }
                     }
                     .padding(.horizontal, 14)

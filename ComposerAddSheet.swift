@@ -36,9 +36,7 @@ struct ComposerAddSheet: View {
                     Text("Options").font(.vm.title2).foregroundStyle(Color.vm.label)
                     Spacer()
                     Button { onClose() } label: {
-                        Image(systemName: "xmark")
-                            .font(.system(size: 13, weight: .semibold))
-                            .foregroundStyle(Color.vm.labelSecondary)
+                        VMIcon(name: "x", size: 14, color: .vm.labelSecondary)
                             .frame(width: 30, height: 30)
                             .background(Color.vm.fill3, in: Circle())
                     }
@@ -121,11 +119,11 @@ struct ComposerAddSheet: View {
             Spacer()
             switch opt.trailing {
             case .check:
-                Image(systemName: "checkmark").font(.system(size: 14, weight: .semibold)).foregroundStyle(Color.vm.tint)
+                VMIcon(name: "check", size: 16, color: .vm.tint)
             case .lock, .maxLock:
-                Image(systemName: "lock").font(.system(size: 15)).foregroundStyle(Color.vm.labelTertiary)
+                VMIcon(name: "lock", size: 16, color: .vm.labelTertiary)
             case .chevron:
-                Image(systemName: "chevron.right").font(.system(size: 13, weight: .semibold)).foregroundStyle(Color.vm.labelTertiary)
+                VMIcon(name: "chevron-right", size: 16, color: .vm.labelTertiary)
             }
         }
         .frame(minHeight: 52)
@@ -155,9 +153,7 @@ private struct SheetHeader: View {
             Text(title).font(.vm.title3).foregroundStyle(Color.vm.label)
             Spacer()
             Button { onClose() } label: {
-                Image(systemName: "xmark")
-                    .font(.system(size: 13, weight: .semibold))
-                    .foregroundStyle(Color.vm.labelSecondary)
+                VMIcon(name: "x", size: 14, color: .vm.labelSecondary)
                     .frame(width: 30, height: 30)
                     .background(Color.vm.fill3, in: Circle())
             }
@@ -248,7 +244,7 @@ struct ConnectorsSheet: View {
         VStack(spacing: 0) {
             SheetHeader(title: "Connectors", onClose: onClose)
             HStack(spacing: 8) {
-                Image(systemName: "magnifyingglass").font(.system(size: 14)).foregroundStyle(Color.vm.labelTertiary)
+                VMIcon(name: "search", size: 16, color: .vm.labelTertiary)
                 TextField("Search connectors", text: $query)
                     .font(.vm.subhead).foregroundStyle(Color.vm.label).tint(Color.vm.tint)
             }
@@ -265,9 +261,7 @@ struct ConnectorsSheet: View {
                                 VMImage(name: c.icon, size: 28)
                                 Text(c.name).font(.vm.body).foregroundStyle(Color.vm.label)
                                 Spacer()
-                                Image(systemName: "chevron.right")
-                                    .font(.system(size: 13, weight: .semibold))
-                                    .foregroundStyle(Color.vm.labelTertiary)
+                                VMIcon(name: "chevron-right", size: 16, color: .vm.labelTertiary)
                             }
                             .padding(.horizontal, 20).frame(height: 52)
                             .contentShape(Rectangle())

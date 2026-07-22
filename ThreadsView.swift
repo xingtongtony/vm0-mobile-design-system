@@ -48,9 +48,7 @@ struct ThreadsDrawer: View {
 
     private var searchField: some View {
         HStack(spacing: 8) {
-            Image(systemName: "magnifyingglass")
-                .font(.system(size: 14))
-                .foregroundStyle(Color.vm.labelTertiary)
+            VMIcon(name: "search", size: 16, color: .vm.labelTertiary)
             TextField("Search chats", text: $query)
                 .font(.vm.subhead)
                 .foregroundStyle(Color.vm.label)
@@ -108,9 +106,7 @@ struct ThreadsDrawer: View {
                 Text("Settings").font(.vm.caption1).foregroundStyle(Color.vm.labelSecondary)
             }
             Spacer()
-            Image(systemName: "gearshape")
-                .font(.system(size: 18))
-                .foregroundStyle(Color.vm.labelTertiary)
+            VMIcon(name: "settings", size: 18, color: .vm.labelTertiary)
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 12)
