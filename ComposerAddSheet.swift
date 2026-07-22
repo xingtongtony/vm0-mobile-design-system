@@ -21,11 +21,18 @@ struct ComposerAddSheet: View {
     @State private var sub: Sub?
     @State private var showFileImporter = false
 
-    // 卡片下面那一列选项 —— 真实 vm0 项(Connectors 移到这里;非 vm0 的 Deep research/Model council 已删)
-    private let options: [AddOption] = [
-        .init(key: "connectors", icon: "plug",     title: "Connectors",      subtitle: "Use a connected integration", trailing: .chevron),
-        .init(key: "templates",  icon: "template", title: "Templates",       subtitle: "Start from a template",       trailing: .chevron),
-        .init(key: "workflow",   icon: "route",    title: "Create workflow", subtitle: "Automate a repeatable task",  trailing: .chevron),
+    // 上面两个选项(无 subtitle)
+    private let topOptions: [AddOption] = [
+        .init(key: "connectors", icon: "plug",  title: "Connectors",      subtitle: nil, trailing: .chevron),
+        .init(key: "workflow",   icon: "route", title: "Create workflow", subtitle: nil, trailing: .chevron),
+    ]
+    // 模板类型(平铺,各配对应图标;同 vm0 web 的生成类别)
+    private let templateOptions: [AddOption] = [
+        .init(key: "tpl-presentation", icon: "presentation", title: "Presentation", subtitle: nil, trailing: .chevron),
+        .init(key: "tpl-website",      icon: "world",        title: "Website",      subtitle: nil, trailing: .chevron),
+        .init(key: "tpl-illustration", icon: "photo",        title: "Illustration", subtitle: nil, trailing: .chevron),
+        .init(key: "tpl-video",        icon: "video",        title: "Video",        subtitle: nil, trailing: .chevron),
+        .init(key: "tpl-workflow",     icon: "route",        title: "Workflow",     subtitle: nil, trailing: .chevron),
     ]
 
     var body: some View {
@@ -38,9 +45,14 @@ struct ComposerAddSheet: View {
                     card("file-plus", "File") { showFileImporter = true }
                 }
 
-                // 下面的选项列表
+                // 下面的选项列表:两个 option → 分割线 → 模板类型平铺
                 VStack(spacing: 0) {
-                    ForEach(options) { opt in
+                    ForEach(topOptions) { opt in
+                        Button { handleOption(opt) } label: { optionRow(opt) }
+                            .buttonStyle(.plain)
+                    }
+                    Divider().overlay(Color.vm.separatorHairline).padding(.vertical, 6)
+                    ForEach(templateOptions) { opt in
                         Button { handleOption(opt) } label: { optionRow(opt) }
                             .buttonStyle(.plain)
                     }
