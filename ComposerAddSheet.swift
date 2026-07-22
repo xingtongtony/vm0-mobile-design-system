@@ -29,31 +29,28 @@ struct ComposerAddSheet: View {
     ]
 
     var body: some View {
-        VStack(spacing: 0) {
-            // 用共用的 VMSheetHeader,和其它 sheet 完全一致(不再手写内联标题)
-            VMSheetHeader(title: "Options", onClose: onClose)
-            ScrollView {
-                VStack(alignment: .leading, spacing: 16) {
-                    // 三张小卡(Connectors 已移到下面列表)
-                    HStack(spacing: 10) {
-                        card("photo", "Image") { sub = .image }
-                        card("camera", "Camera") { sub = .camera }
-                        card("file-plus", "File") { showFileImporter = true }
-                    }
+        ScrollView {
+            VStack(alignment: .leading, spacing: 16) {
+                // 三张小卡(Connectors 已移到下面列表)
+                HStack(spacing: 10) {
+                    card("photo", "Image") { sub = .image }
+                    card("camera", "Camera") { sub = .camera }
+                    card("file-plus", "File") { showFileImporter = true }
+                }
 
-                    // 下面的选项列表
-                    VStack(spacing: 0) {
-                        ForEach(options) { opt in
-                            Button { handleOption(opt) } label: { optionRow(opt) }
-                                .buttonStyle(.plain)
-                        }
+                // 下面的选项列表
+                VStack(spacing: 0) {
+                    ForEach(options) { opt in
+                        Button { handleOption(opt) } label: { optionRow(opt) }
+                            .buttonStyle(.plain)
                     }
                 }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 20)
             }
+            .padding(.horizontal, 20)
+            .padding(.top, 8)
+            .padding(.bottom, 20)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .vmSheetChrome(title: "Options", onClose: onClose)
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
         .presentationBackground(.ultraThinMaterial)
@@ -141,25 +138,23 @@ struct ImagePickerSheet: View {
     ]
 
     var body: some View {
-        VStack(spacing: 0) {
-            VMSheetHeader(title: "Photos", onClose: onClose)
-            ScrollView {
-                LazyVGrid(columns: cols, spacing: 8) {
-                    ForEach(Array(swatches.enumerated()), id: \.offset) { _, c in
-                        Button { onClose() } label: {
-                            RoundedRectangle(cornerRadius: VM.radius.md, style: .continuous)
-                                .fill(LinearGradient(colors: c, startPoint: .topLeading, endPoint: .bottomTrailing))
-                                .aspectRatio(1, contentMode: .fit)
-                                .overlay(VMIcon(name: "photo", size: 22, color: .white).opacity(0.85))
-                        }
-                        .buttonStyle(.plain)
+        ScrollView {
+            LazyVGrid(columns: cols, spacing: 8) {
+                ForEach(Array(swatches.enumerated()), id: \.offset) { _, c in
+                    Button { onClose() } label: {
+                        RoundedRectangle(cornerRadius: VM.radius.md, style: .continuous)
+                            .fill(LinearGradient(colors: c, startPoint: .topLeading, endPoint: .bottomTrailing))
+                            .aspectRatio(1, contentMode: .fit)
+                            .overlay(VMIcon(name: "photo", size: 22, color: .white).opacity(0.85))
                     }
+                    .buttonStyle(.plain)
                 }
-                .padding(.horizontal, 20)
-                .padding(.bottom, 24)
             }
+            .padding(.horizontal, 20)
+            .padding(.top, 8)
+            .padding(.bottom, 24)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .vmSheetChrome(title: "Photos", onClose: onClose)
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
         .presentationBackground(.ultraThinMaterial)
@@ -171,7 +166,6 @@ struct CameraSheet: View {
     var onClose: () -> Void
     var body: some View {
         VStack(spacing: 0) {
-            VMSheetHeader(title: "Camera", onClose: onClose)
             RoundedRectangle(cornerRadius: VM.radius.card, style: .continuous)
                 .fill(Color.black.opacity(0.85))
                 .overlay(
@@ -182,13 +176,14 @@ struct CameraSheet: View {
                     }
                 )
                 .padding(.horizontal, 20)
+                .padding(.top, 8)
             // 快门
             Circle().stroke(Color.vm.label.opacity(0.6), lineWidth: 3)
                 .frame(width: 66, height: 66)
                 .overlay(Circle().fill(Color.vm.label).frame(width: 52, height: 52))
                 .padding(.vertical, 22)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .vmSheetChrome(title: "Camera", onClose: onClose)
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .presentationBackground(.ultraThinMaterial)
@@ -220,38 +215,35 @@ struct ConnectorsSheet: View {
     @State private var showAll = false
 
     var body: some View {
-        VStack(spacing: 0) {
-            VMSheetHeader(title: "Connectors", onClose: onClose)
-            List {
-                Section {
-                    Button { showAll = true } label: {
-                        HStack(spacing: 12) {
-                            VMIcon(name: "plus", size: 22, color: .vm.label)
-                                .frame(width: 28, height: 28)
-                            Text("Add connectors").font(.vm.body).foregroundStyle(Color.vm.label)
-                            Spacer()
-                            VMIcon(name: "chevron-right", size: 16, color: .vm.labelTertiary)
-                        }
-                        .contentShape(Rectangle())
+        List {
+            Section {
+                Button { showAll = true } label: {
+                    HStack(spacing: 12) {
+                        VMIcon(name: "plus", size: 22, color: .vm.label)
+                            .frame(width: 28, height: 28)
+                        Text("Add connectors").font(.vm.body).foregroundStyle(Color.vm.label)
+                        Spacer()
+                        VMIcon(name: "chevron-right", size: 16, color: .vm.labelTertiary)
                     }
-                    .buttonStyle(.plain)
-                    .listRowBackground(Color.vm.bgElevated)
+                    .contentShape(Rectangle())
                 }
-
-                Section {
-                    ForEach(Connector.samples) { c in
-                        Button { onClose() } label: { ConnectorRow(c: c) }
-                            .buttonStyle(.plain)
-                            .listRowBackground(Color.vm.bgElevated)
-                    }
-                } header: {
-                    Text("Recommended").font(.vm.footnote).foregroundStyle(Color.vm.labelSecondary)
-                }
+                .buttonStyle(.plain)
+                .listRowBackground(Color.vm.bgElevated)
             }
-            .listStyle(.insetGrouped)
-            .scrollContentBackground(.hidden)
+
+            Section {
+                ForEach(Connector.samples) { c in
+                    Button { onClose() } label: { ConnectorRow(c: c) }
+                        .buttonStyle(.plain)
+                        .listRowBackground(Color.vm.bgElevated)
+                }
+            } header: {
+                Text("Recommended").font(.vm.footnote).foregroundStyle(Color.vm.labelSecondary)
+            }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .vmSheetChrome(title: "Connectors", onClose: onClose)
         .presentationDetents([.medium, .large])
         .presentationDragIndicator(.visible)
         .presentationBackground(.ultraThinMaterial)
@@ -271,7 +263,6 @@ struct AllConnectorsSheet: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            VMSheetHeader(title: "Add connectors", onClose: onClose)
             HStack(spacing: 8) {
                 VMIcon(name: "search", size: 16, color: .vm.labelTertiary)
                 TextField("Search integrations", text: $query)
@@ -279,7 +270,7 @@ struct AllConnectorsSheet: View {
             }
             .padding(.horizontal, 12).frame(height: 38)
             .background(Color.vm.fill3, in: RoundedRectangle(cornerRadius: VM.radius.md, style: .continuous))
-            .padding(.horizontal, 20).padding(.bottom, 8)
+            .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 8)
 
             List {
                 Section {
@@ -293,7 +284,7 @@ struct AllConnectorsSheet: View {
             .listStyle(.insetGrouped)
             .scrollContentBackground(.hidden)
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .vmSheetChrome(title: "Add connectors", onClose: onClose)
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .presentationBackground(.ultraThinMaterial)

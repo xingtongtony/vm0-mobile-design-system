@@ -136,27 +136,35 @@ struct ConnectorStack: View {
     }
 }
 
-// MARK: - VMSheetHeader
-// bottom sheet 通用头:关闭键在左,标题居中(导航栏式)。关闭是原生 SwiftUI Button。
-struct VMSheetHeader: View {
+// MARK: - VMSheetChrome
+// bottom sheet 原生头部 —— 用系统 NavigationStack + .toolbar(真原生导航栏)。
+// 关闭键在 .topBarLeading,标题在 .principal(文字仍走我们的 Noto Sans)。
+// 用法:  <sheet 内容>.vmSheetChrome(title: "Connectors", onClose: ...)
+struct VMSheetChrome: ViewModifier {
     let title: String
     var onClose: () -> Void
-    var body: some View {
-        ZStack {
-            Text(title).font(.vm.title3).foregroundStyle(Color.vm.label)   // 居中,semibold 20(比之前小且细)
-            HStack {
-                Button { onClose() } label: {
-                    VMIcon(name: "x", size: 16, color: .vm.labelSecondary)
-                        .frame(width: 36, height: 36)               // 关闭键调大
-                        .background(Color.vm.fill3, in: Circle())
+
+    func body(content: Content) -> some View {
+        NavigationStack {
+            content
+                .navigationBarTitleDisplayMode(.inline)
+                .toolbar {
+                    ToolbarItem(placement: .topBarLeading) {
+                        Button { onClose() } label: {
+                            VMIcon(name: "x", size: 16, color: .vm.labelSecondary)
+                        }
+                    }
+                    ToolbarItem(placement: .principal) {
+                        Text(title).font(.vm.headline).foregroundStyle(Color.vm.label)
+                    }
                 }
-                .buttonStyle(.plain)
-                Spacer()
-            }
         }
-        .padding(.horizontal, 20)
-        .padding(.top, 18)
-        .padding(.bottom, 12)
+    }
+}
+
+extension View {
+    func vmSheetChrome(title: String, onClose: @escaping () -> Void) -> some View {
+        modifier(VMSheetChrome(title: title, onClose: onClose))
     }
 }
 

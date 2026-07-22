@@ -20,12 +20,10 @@ struct WorkflowsSheet: View {
 
     var body: some View {
         VStack(spacing: 0) {
-            VMSheetHeader(title: "Workflows", onClose: onClose)
-
             Text("A reusable SOP for a task. Run, edit, or automate it.")
                 .font(.vm.footnote).foregroundStyle(Color.vm.labelSecondary)
                 .frame(maxWidth: .infinity, alignment: .leading)
-                .padding(.horizontal, 20).padding(.bottom, 12)
+                .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 12)
 
             // 过滤 chips(原生 ScrollView 横滑)
             ScrollView(.horizontal, showsIndicators: false) {
@@ -68,7 +66,7 @@ struct WorkflowsSheet: View {
                 .padding(.bottom, 24)
             }
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .top)
+        .vmSheetChrome(title: "Workflows", onClose: onClose)
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
         .presentationBackground(.ultraThinMaterial)
