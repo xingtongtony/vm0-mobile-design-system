@@ -5,6 +5,7 @@ import UniformTypeIdentifiers
 struct AddOption: Identifiable {
     enum Trailing { case check, lock, maxLock, chevron }
     let id = UUID()
+    var key: String
     var icon: String
     var title: String
     var subtitle: String?
@@ -20,13 +21,11 @@ struct ComposerAddSheet: View {
     @State private var sub: Sub?
     @State private var showFileImporter = false
 
-    // 卡片下面那一列选项(范例的 Search/Deep research/Model council + 我们的 Templates/Create workflow)
+    // 卡片下面那一列选项 —— 真实 vm0 项(Connectors 移到这里;非 vm0 的 Deep research/Model council 已删)
     private let options: [AddOption] = [
-        .init(icon: "search",    title: "Search",         subtitle: nil,                              trailing: .check),
-        .init(icon: "telescope", title: "Deep research",  subtitle: "In-depth reports and analysis",  trailing: .lock),
-        .init(icon: "scale",     title: "Model council",  subtitle: "Multiple AI models at once",     trailing: .maxLock),
-        .init(icon: "template",  title: "Templates",      subtitle: "Start from a template",          trailing: .chevron),
-        .init(icon: "route",     title: "Create workflow", subtitle: "Automate a repeatable task",     trailing: .chevron),
+        .init(key: "connectors", icon: "plug",     title: "Connectors",      subtitle: "Use a connected integration", trailing: .chevron),
+        .init(key: "templates",  icon: "template", title: "Templates",       subtitle: "Start from a template",       trailing: .chevron),
+        .init(key: "workflow",   icon: "route",    title: "Create workflow", subtitle: "Automate a repeatable task",  trailing: .chevron),
     ]
 
     var body: some View {
@@ -46,12 +45,11 @@ struct ComposerAddSheet: View {
                     .buttonStyle(.plain)
                 }
 
-                // 四张小卡
+                // 三张小卡(Connectors 已移到下面列表)
                 HStack(spacing: 10) {
                     card("photo", "Image") { sub = .image }
                     card("camera", "Camera") { sub = .camera }
                     card("file-plus", "File") { showFileImporter = true }
-                    card("plug", "Connectors") { sub = .connectors }
                 }
 
                 Text("3 uploads remaining today")
@@ -61,7 +59,7 @@ struct ComposerAddSheet: View {
                 // 下面的选项列表(之前被我误删的项在这里补回)
                 VStack(spacing: 0) {
                     ForEach(options) { opt in
-                        Button { onClose() } label: { optionRow(opt) }
+                        Button { handleOption(opt) } label: { optionRow(opt) }
                             .buttonStyle(.plain)
                     }
                 }
@@ -88,6 +86,14 @@ struct ComposerAddSheet: View {
             allowsMultipleSelection: true
         ) { _ in
             onClose()
+        }
+    }
+
+    private func handleOption(_ opt: AddOption) {
+        if opt.key == "connectors" {
+            sub = .connectors          // Connectors 打开它自己的子 sheet
+        } else {
+            onClose()                  // Templates / Create workflow:占位关闭
         }
     }
 
