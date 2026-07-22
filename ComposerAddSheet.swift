@@ -274,28 +274,19 @@ struct AllConnectorsSheet: View {
     }
 
     var body: some View {
-        VStack(spacing: 0) {
-            HStack(spacing: 8) {
-                VMIcon(name: "search", size: 16, color: .vm.labelTertiary)
-                TextField("Search integrations", text: $query)
-                    .font(.vm.subhead).foregroundStyle(Color.vm.label).tint(Color.vm.tint)
-            }
-            .padding(.horizontal, 12).frame(height: 38)
-            .background(Color.vm.fill3, in: RoundedRectangle(cornerRadius: VM.radius.md, style: .continuous))
-            .padding(.horizontal, 20).padding(.top, 8).padding(.bottom, 8)
-
-            List {
-                Section {
-                    ForEach(filtered) { c in
-                        Button { onClose() } label: { ConnectorRow(c: c) }
-                            .buttonStyle(.plain)
-                            .listRowBackground(Color.vm.bgElevated)
-                    }
+        List {
+            Section {
+                ForEach(filtered) { c in
+                    Button { onClose() } label: { ConnectorRow(c: c) }
+                        .buttonStyle(.plain)
+                        .listRowBackground(Color.vm.bgElevated)
                 }
             }
-            .listStyle(.insetGrouped)
-            .scrollContentBackground(.hidden)
         }
+        .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .searchable(text: $query, placement: .navigationBarDrawer(displayMode: .always), prompt: "Search integrations")
+        .tint(Color.vm.tint)
         .vmSheetChrome(title: "Add connectors", onClose: onClose)
         .presentationDetents([.large])
         .presentationDragIndicator(.visible)
