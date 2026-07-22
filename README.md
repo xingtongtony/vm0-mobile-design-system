@@ -27,7 +27,7 @@ export DEVELOPER_DIR=/Applications/Xcode.app/Contents/Developer
 SDK=$(xcrun --sdk iphonesimulator --show-sdk-path)
 xcrun --sdk iphonesimulator swiftc -target arm64-apple-ios26.0-simulator -sdk "$SDK" \
   VM0App.swift VMTheme.swift ChatModels.swift ChatView.swift ThreadsView.swift -o VM0Chat
-mkdir -p VM0Chat.app && cp VM0Chat *.png Info.plist VM0Chat.app/
+mkdir -p VM0Chat.app && cp VM0Chat *.png *.ttf Info.plist VM0Chat.app/
 xcrun simctl install booted VM0Chat.app && xcrun simctl launch booted ai.vm0.chatpoc
 ```
 > 深色模式验证:Simulator 菜单 **Features > Toggle Appearance**(⇧⌘A)。

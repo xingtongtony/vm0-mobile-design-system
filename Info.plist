@@ -34,7 +34,6 @@
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
 	</array>
-	<!-- Noto Sans / JetBrains Mono 打进 bundle 后,取消下面注释让 Font.vm.* 生效:
 	<key>UIAppFonts</key>
 	<array>
 		<string>NotoSans-Regular.ttf</string>
@@ -43,6 +42,5 @@
 		<string>NotoSans-Bold.ttf</string>
 		<string>JetBrainsMono-Regular.ttf</string>
 	</array>
-	-->
 </dict>
 </plist>

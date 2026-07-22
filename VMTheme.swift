@@ -78,14 +78,24 @@ extension Color {
 // Noto Sans 打进 bundle(ttf + Info.plist UIAppFonts)后自动生效;缺字体时回退系统字。
 // CJK 由 iOS 字体级联处理(Noto Sans SC 可后续补充)。
 enum VMFont {
-    static let sansName = "NotoSans"
     static let monoName = "JetBrainsMono-Regular"
 
-    static func sans(_ size: CGFloat, _ weight: Font.Weight) -> Font {
-        if UIFont(name: sansName, size: size) != nil {
-            return .custom(sansName, size: size).weight(weight)
+    // 按字重取对应的 PostScript 名(Regular 文件不含 Bold 字形,不能靠 .weight() 切换)
+    static func sansPSName(_ weight: Font.Weight) -> String {
+        switch weight {
+        case .bold, .heavy, .black:      return "NotoSans-Bold"
+        case .semibold:                  return "NotoSans-SemiBold"
+        case .medium:                    return "NotoSans-Medium"
+        default:                         return "NotoSans-Regular"
         }
-        return .system(size: size, weight: weight)
+    }
+
+    static func sans(_ size: CGFloat, _ weight: Font.Weight) -> Font {
+        let name = sansPSName(weight)
+        if UIFont(name: name, size: size) != nil {
+            return .custom(name, size: size)
+        }
+        return .system(size: size, weight: weight)   // 缺字体时回退系统字
     }
 
     static func mono(_ size: CGFloat) -> Font {
