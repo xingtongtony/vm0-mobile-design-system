@@ -21,10 +21,9 @@ struct ComposerAddSheet: View {
     @State private var sub: Sub?
     @State private var showFileImporter = false
 
-    // 上面两个选项(无 subtitle)
+    // 上面的选项(无 subtitle)
     private let topOptions: [AddOption] = [
-        .init(key: "connectors", icon: "plug",  title: "Connectors",      subtitle: nil, trailing: .chevron),
-        .init(key: "workflow",   icon: "route", title: "Create workflow", subtitle: nil, trailing: .chevron),
+        .init(key: "connectors", icon: "plug", title: "Connectors", subtitle: nil, trailing: .chevron),
     ]
     // 模板类型(平铺,各配对应图标;同 vm0 web 的生成类别)
     private let templateOptions: [AddOption] = [
