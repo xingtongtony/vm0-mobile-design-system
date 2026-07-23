@@ -69,12 +69,27 @@ struct ChatComposer: View {
         }
     }
 
-    // 模型切换 —— 原生 Menu(Picker 自动打勾)。button 只显示短名(无图标/无箭头/无 "Claude")
+    // 把 bundle 里的 PNG 作为原色 UIImage 交给系统菜单(这样 native Menu 才能显示我们的图标)
+    private func modelIcon(_ name: String) -> Image {
+        if let path = Bundle.main.path(forResource: name, ofType: "png"),
+           let ui = UIImage(contentsOfFile: path) {
+            return Image(uiImage: ui.withRenderingMode(.alwaysOriginal))
+        }
+        return Image(systemName: "cpu")
+    }
+
+    // 模型切换 —— 原生 Menu,每项前面带模型 logo(Label + Image(uiImage:));选中项打勾
     private var modelMenu: some View {
         Menu {
-            Picker("Model", selection: $modelID) {
-                ForEach(Model.samples) { m in
-                    Text(m.short).tag(m.id)
+            ForEach(Model.samples) { m in
+                Button {
+                    modelID = m.id
+                } label: {
+                    if m.id == modelID {
+                        Label { Text("✓  " + m.short) } icon: { modelIcon(m.icon) }
+                    } else {
+                        Label { Text(m.short) } icon: { modelIcon(m.icon) }
+                    }
                 }
             }
         } label: {
