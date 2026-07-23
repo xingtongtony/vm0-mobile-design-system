@@ -170,42 +170,8 @@ struct CircleIconButton: View {
     }
 }
 
-// MARK: - GlassPill
-// 玻璃胶囊按钮(如 agent 切换 pill)。label 内容自定义。
-struct GlassPill<Label: View>: View {
-    var height: CGFloat = 40
-    var action: () -> Void
-    @ViewBuilder var label: () -> Label
-
-    var body: some View {
-        Button(action: action) {
-            label()
-                .padding(.leading, 6)
-                .padding(.trailing, 12)
-                .frame(height: height)
-                .glassEffect(.regular.interactive(), in: Capsule())
-        }
-        .buttonStyle(.plain)
-    }
-}
-
-// MARK: - ConnectorStack
-// 已连接工具的叠加头像(白圈环绕,重叠排列)—— 对话框里代替单个 plug 图标。
-struct ConnectorStack: View {
-    var connectors: [Connector]
-    var size: CGFloat = 26
-
-    var body: some View {
-        HStack(spacing: -size * 0.34) {
-            ForEach(connectors) { c in
-                VMImage(name: c.icon, size: size * 0.6)
-                    .frame(width: size, height: size)
-                    .background(Circle().fill(Color.vm.bgElevated))
-                    .overlay(Circle().strokeBorder(Color.vm.separatorHairline, lineWidth: 1))
-            }
-        }
-    }
-}
+// (GlassPill / ConnectorStack 已移除 —— 前者被 VMPickerMenu 内联触发器取代,
+//  后者在移除对话框连接器叠加头像后无引用;需要时可从 git 历史恢复)
 
 // MARK: - VMSheetChrome
 // bottom sheet 原生头部 —— 用系统 NavigationStack + .toolbar(真原生导航栏)。
