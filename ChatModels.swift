@@ -113,7 +113,7 @@ struct ChatMessage: Identifiable {
 // "正在跑" 只是 thread 上的一个状态(running),不拆成第二张列表。
 struct ChatThread: Identifiable {
     let id = UUID()
-    var emoji: String
+    var icon: String        // Tabler 图标名(按对话含义)
     var title: String
     var snippet: String
     var running: Bool = false
@@ -121,10 +121,10 @@ struct ChatThread: Identifiable {
     var updated: String
 
     static let samples: [ChatThread] = [
-        ChatThread(emoji: "🐛", title: "Workspace bug triage", snippet: "Pushed to PR #11357", running: true, pinned: true, updated: "now"),
-        ChatThread(emoji: "📥", title: "Summarize my inbox", snippet: "12 threads, 3 need a reply", pinned: true, updated: "9:02"),
-        ChatThread(emoji: "🚀", title: "Release notes draft", snippet: "Drafted the v0.4 changelog", updated: "Yesterday"),
-        ChatThread(emoji: "🔀", title: "Review PR #11342", snippet: "Left 4 comments", updated: "Yesterday"),
-        ChatThread(emoji: "📊", title: "Weekly usage report", snippet: "Runs up 18% WoW", updated: "Mon"),
+        ChatThread(icon: "bug",              title: "Workspace bug triage", snippet: "Pushed to PR #11357", running: true, pinned: true, updated: "now"),
+        ChatThread(icon: "inbox",            title: "Summarize my inbox",   snippet: "12 threads, 3 need a reply", pinned: true, updated: "9:02"),
+        ChatThread(icon: "rocket",           title: "Release notes draft",  snippet: "Drafted the v0.4 changelog", updated: "Yesterday"),
+        ChatThread(icon: "git-pull-request", title: "Review PR #11342",     snippet: "Left 4 comments", updated: "Yesterday"),
+        ChatThread(icon: "chart-bar",        title: "Weekly usage report",  snippet: "Runs up 18% WoW", updated: "Mon"),
     ]
 }

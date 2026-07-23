@@ -50,8 +50,7 @@ struct ChatsPage: View {
             onClose()
         } label: {
             HStack(spacing: 12) {
-                Text(t.emoji)
-                    .font(.system(size: 20))
+                VMIcon(name: t.icon, size: 19, color: .vm.label)
                     .frame(width: 34, height: 34)
                     .background(Color.vm.fill3, in: RoundedRectangle(cornerRadius: 9, style: .continuous))
                 VStack(alignment: .leading, spacing: 2) {
