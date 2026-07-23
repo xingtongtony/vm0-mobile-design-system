@@ -14,28 +14,22 @@ struct ChatView: View {
         Agent.samples.first { $0.id == agentID } ?? .zero
     }
 
-    // 空态 starter 模板(解决"用户不知道 Zero 能干嘛")
-    private let templates = [
-        "Summarize my inbox",
-        "Triage GitHub issues",
-        "Draft a standup update",
-        "Review a pull request",
-    ]
-
     var body: some View {
-        ScrollView {
+        Group {
             if messages.isEmpty {
                 emptyState
             } else {
-                VStack(alignment: .leading, spacing: 22) {
-                    ForEach(messages) { messageView($0) }
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 22) {
+                        ForEach(messages) { messageView($0) }
+                    }
+                    .padding(.horizontal, 20)
+                    .padding(.top, 12)
                 }
-                .padding(.horizontal, 20)
-                .padding(.top, 12)
+                .defaultScrollAnchor(.bottom)
+                .scrollDismissesKeyboard(.interactively)   // 下滑可交互收起键盘
             }
         }
-        .defaultScrollAnchor(.bottom)
-        .scrollDismissesKeyboard(.interactively)   // 下滑可交互收起键盘
         .safeAreaInset(edge: .top) { topBar }
         .safeAreaInset(edge: .bottom) { ChatComposer(onSend: sendMessage) }
         .background(Color.vm.bgGrouped.ignoresSafeArea())
@@ -110,34 +104,17 @@ struct ChatView: View {
         .background(Color.vm.bgElevated)
     }
 
-    // 空态:agent 头像 + 招呼 + 模板 tile(点一下直接发)
+    // 空态:agent 头像 + 招呼,屏幕上下居中(去掉模板卡)
     private var emptyState: some View {
-        VStack(spacing: 24) {
-            AgentAvatar(agent: currentAgent, size: 64)
+        VStack(spacing: 18) {
+            Spacer()
+            AgentAvatar(agent: currentAgent, size: 72)
             Text("How can I help, Tong?")
                 .font(.vm.title2)
                 .foregroundStyle(Color.vm.label)
-            LazyVGrid(
-                columns: [GridItem(.flexible(), spacing: 10), GridItem(.flexible(), spacing: 10)],
-                spacing: 10
-            ) {
-                ForEach(templates, id: \.self) { t in
-                    Button { sendMessage(t) } label: {
-                        Text(t)
-                            .font(.vm.subhead)
-                            .foregroundStyle(Color.vm.label)
-                            .multilineTextAlignment(.leading)
-                            .frame(maxWidth: .infinity, minHeight: 62, alignment: .topLeading)
-                            .padding(14)
-                            .background(Color.vm.fill3, in: RoundedRectangle(cornerRadius: VM.radius.lg, style: .continuous))
-                    }
-                    .buttonStyle(.plain)
-                }
-            }
+            Spacer()
         }
-        .frame(maxWidth: .infinity)
-        .padding(.horizontal, 20)
-        .padding(.top, 72)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
     }
 
     @ViewBuilder private func messageView(_ m: ChatMessage) -> some View {

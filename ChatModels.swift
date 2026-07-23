@@ -65,6 +65,22 @@ struct Workflow: Identifiable, Hashable {
     ]
 }
 
+// Model —— 模型切换(图标 = vm0 provider 图标 model-<provider>.png,名称用真实模型名)。
+struct Model: Identifiable, Hashable {
+    let id: String
+    var name: String
+    var icon: String
+
+    static let samples: [Model] = [
+        .init(id: "opus",     name: "Claude Opus 4.8",   icon: "model-anthropic"),
+        .init(id: "sonnet",   name: "Claude Sonnet 4.5", icon: "model-anthropic"),
+        .init(id: "gpt5",     name: "GPT-5",             icon: "model-openai"),
+        .init(id: "deepseek", name: "DeepSeek V3",       icon: "model-deepseek"),
+        .init(id: "kimi",     name: "Kimi K2",           icon: "model-kimi"),
+    ]
+    static let defaultID = "opus"
+}
+
 // 聊天消息(POC 假数据)。role 决定渲染:user = 气泡靠右,assistant = 头像 + 平铺正文。
 struct ChatMessage: Identifiable {
     enum Role { case user, assistant }
