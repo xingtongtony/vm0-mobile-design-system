@@ -7,7 +7,6 @@ import UIKit
 struct ChatView: View {
     @State private var messages: [ChatMessage] = ChatMessage.sampleThread
     @State private var showThreads = false
-    @State private var showAgentPicker = false
     @State private var agentID = Agent.zero.id
 
     private var currentAgent: Agent {
@@ -56,10 +55,20 @@ struct ChatView: View {
         .padding(.vertical, 10)
     }
 
-    // agent 切换入口 —— 玻璃 pill,点开是原生 .popover 下拉(每行带真头像 + 选中打勾)
+    // agent 切换入口 —— 原生 Menu,每项带头像(VMMenuIcon);选中项打勾。触发器是玻璃 pill
     private var agentSwitcher: some View {
-        GlassPill {
-            showAgentPicker = true
+        Menu {
+            ForEach(Agent.samples) { a in
+                Button {
+                    agentID = a.id
+                } label: {
+                    if a.id == agentID {
+                        Label { Text("✓  " + a.name) } icon: { VMMenuIcon.image(a.avatar) }
+                    } else {
+                        Label { Text(a.name) } icon: { VMMenuIcon.image(a.avatar) }
+                    }
+                }
+            }
         } label: {
             HStack(spacing: 8) {
                 AgentAvatar(agent: currentAgent, size: 24)
@@ -68,40 +77,10 @@ struct ChatView: View {
                     .foregroundStyle(Color.vm.label)
                 VMIcon(name: "chevron-down", size: 14, color: .vm.labelSecondary)
             }
+            .padding(.leading, 6).padding(.trailing, 12)
+            .frame(height: 40)
+            .glassEffect(.regular.interactive(), in: Capsule())
         }
-        .popover(isPresented: $showAgentPicker) {
-            agentPicker.presentationCompactAdaptation(.popover)
-        }
-    }
-
-    // 下拉内容 —— 原生行,头像常显(不用等选完)
-    private var agentPicker: some View {
-        VStack(spacing: 0) {
-            ForEach(Array(Agent.samples.enumerated()), id: \.element.id) { idx, a in
-                Button {
-                    agentID = a.id
-                    showAgentPicker = false
-                } label: {
-                    HStack(spacing: 10) {
-                        AgentAvatar(agent: a, size: 30)
-                        Text(a.name).font(.vm.headline).foregroundStyle(Color.vm.label)
-                        Spacer(minLength: 24)
-                        if a.id == agentID {
-                            VMIcon(name: "check", size: 16, color: .vm.tint)
-                        }
-                    }
-                    .padding(.horizontal, 14)
-                    .padding(.vertical, 10)
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                if idx < Agent.samples.count - 1 {
-                    Divider().overlay(Color.vm.separatorHairline)
-                }
-            }
-        }
-        .frame(width: 240)
-        .background(Color.vm.bgElevated)
     }
 
     // 空态:agent 头像 + 招呼,屏幕上下居中(去掉模板卡)

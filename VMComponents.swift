@@ -99,6 +99,27 @@ struct GlassCircleButton: View {
     }
 }
 
+// MARK: - VMMenuIcon
+// 把 bundle 里的 PNG 变成"带内边距的原色 UIImage",交给原生 Menu 的 Label。
+// 原生菜单会把图标缩到固定槽位;满图铺满会显得偏大,加内边距(pad)让它像正常菜单图标。
+enum VMMenuIcon {
+    static func image(_ name: String, pad: CGFloat = 0.18) -> Image {
+        guard let path = Bundle.main.path(forResource: name, ofType: "png"),
+              let ui = UIImage(contentsOfFile: path) else {
+            return Image(systemName: "cpu")
+        }
+        let canvas = CGSize(width: 32, height: 32)
+        let inset = canvas.width * pad
+        let rect = CGRect(x: inset, y: inset,
+                          width: canvas.width - inset * 2,
+                          height: canvas.height - inset * 2)
+        let out = UIGraphicsImageRenderer(size: canvas).image { _ in
+            ui.draw(in: rect)
+        }.withRenderingMode(.alwaysOriginal)
+        return Image(uiImage: out)
+    }
+}
+
 // MARK: - CircleIconButton
 // 圆形灰底图标钮(composer 的 + / skill 等)。默认 38,与发送钮同尺寸。
 struct CircleIconButton: View {

@@ -69,16 +69,7 @@ struct ChatComposer: View {
         }
     }
 
-    // 把 bundle 里的 PNG 作为原色 UIImage 交给系统菜单(这样 native Menu 才能显示我们的图标)
-    private func modelIcon(_ name: String) -> Image {
-        if let path = Bundle.main.path(forResource: name, ofType: "png"),
-           let ui = UIImage(contentsOfFile: path) {
-            return Image(uiImage: ui.withRenderingMode(.alwaysOriginal))
-        }
-        return Image(systemName: "cpu")
-    }
-
-    // 模型切换 —— 原生 Menu,每项前面带模型 logo(Label + Image(uiImage:));选中项打勾
+    // 模型切换 —— 原生 Menu,每项前面带模型 logo(VMMenuIcon 带内边距,不会过大);选中项打勾
     private var modelMenu: some View {
         Menu {
             ForEach(Model.samples) { m in
@@ -86,21 +77,24 @@ struct ChatComposer: View {
                     modelID = m.id
                 } label: {
                     if m.id == modelID {
-                        Label { Text("✓  " + m.short) } icon: { modelIcon(m.icon) }
+                        Label { Text("✓  " + m.short) } icon: { VMMenuIcon.image(m.icon) }
                     } else {
-                        Label { Text(m.short) } icon: { modelIcon(m.icon) }
+                        Label { Text(m.short) } icon: { VMMenuIcon.image(m.icon) }
                     }
                 }
             }
         } label: {
-            Text(currentModel.short)
-                .font(.vm.subhead).foregroundStyle(Color.vm.label)
-                .lineLimit(1)
-                .fixedSize(horizontal: true, vertical: false)   // 始终按完整宽度,不被瞬时挤窄截断
-                .padding(.horizontal, 12)
-                .frame(height: 34)
-                .background(Color.vm.fill3, in: Capsule())
-                .animation(nil, value: modelID)                 // 切换不做宽度动画
+            HStack(spacing: 6) {
+                VMImage(name: currentModel.icon, size: 18)      // logo 放回 button 上
+                Text(currentModel.short)
+                    .font(.vm.subhead).foregroundStyle(Color.vm.label)
+                    .lineLimit(1)
+                    .fixedSize(horizontal: true, vertical: false)
+            }
+            .padding(.leading, 8).padding(.trailing, 12)
+            .frame(height: 34)
+            .background(Color.vm.fill3, in: Capsule())
+            .animation(nil, value: modelID)                     // 切换不做宽度动画
         }
     }
 
