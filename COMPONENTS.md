@@ -7,13 +7,16 @@
 
 ## 0. 基础层 (Foundations)
 
-### Color tokens — `Color` 扩展(`ChatView.swift`)
-与 `theme/theme.ts` 同源。已用:`vmTint / vmBg / vmLabel / vmLabel2 / vmLabel3 / vmFill / vmChip`。
-> TODO 立项:抽成 `VMTheme`,补齐全套(明暗双模式用 `@Environment(\.colorScheme)`)。
+### Color tokens — `VMTheme.swift`
+与 `theme/theme.ts`(main 分支,Figma 导出 2026-07-20)同源,全套语义色:
+tint 族 / bg 族(Apple grouped model)/ label 4 阶 / fill 4 阶 / separator / status + subtle。
+**明暗双模式已实现**:每个色都是 `UIColor dynamicProvider`,跟随系统自动切换。
+用法:`Color.vm.tint`、`Color.vm.bgGrouped`。radius / space / rule 常量在 `VM.radius.* / VM.space.* / VM.rule.*`。
 
-### Typography
-POC 用系统 San Francisco。**待办**:把 Noto Sans `.ttf` 打进 bundle + `Info.plist UIAppFonts`,
-做成 `Font` 扩展(`.vmBody / .vmTitle2 …`),对齐 Figma 字阶。
+### Typography — `VMTheme.swift`
+`Font.vm.body / .headline / .title2 …` 全阶梯(同 tokens.json "type",Apple 字号)。
+Noto Sans / JetBrains Mono `.ttf` 打进 bundle + `Info.plist UIAppFonts` 后自动生效;
+缺字体时回退系统字(POC 当前状态)。
 
 ### Icon — `VMIcon`
 - **来源**:Tabler(我们的图标库),outline SVG。
