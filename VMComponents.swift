@@ -239,27 +239,4 @@ extension View {
     }
 }
 
-// MARK: - SideDrawer
-// 左侧滑出抽屉(不是 bottom sheet)。scrim 点击关闭,内容从左边缘 move 进出。
-struct SideDrawer<Content: View>: View {
-    @Binding var isOpen: Bool
-    var width: CGFloat = 320
-    @ViewBuilder var content: () -> Content
-
-    var body: some View {
-        ZStack(alignment: .leading) {
-            if isOpen {
-                Color.black.opacity(0.25)
-                    .ignoresSafeArea()
-                    .transition(.opacity)
-                    .onTapGesture { isOpen = false }
-                content()
-                    .frame(width: width)
-                    .frame(maxHeight: .infinity, alignment: .top)
-                    .background(Color.vm.bg)
-                    .transition(.move(edge: .leading))
-            }
-        }
-        .animation(.easeOut(duration: 0.22), value: isOpen)
-    }
-}
+// (SideDrawer 已移除 —— Chats 改为原生 NavigationStack push 整页,不再用自绘抽屉)

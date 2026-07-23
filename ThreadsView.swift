@@ -1,13 +1,13 @@
 import SwiftUI
 
-// 左抽屉内容 —— 一列 chat threads(照桌面模型)。顶部图标用中性 label 色,
-// 与聊天页顶栏图标同一变量(不是橙色)。原生 List / TextField / swipeActions。
-struct ThreadsDrawer: View {
+// Chats 整页 —— 由聊天页左上角按钮原生 push 进来(从右侧滑入)。
+// 全原生:List(insetGrouped) + .searchable(iOS 26 底部搜索) + 系统导航栏(标题走 Noto Sans);
+// header 右侧是返回按钮。选中一条 → 载入并 pop 回聊天。
+struct ChatsPage: View {
+    @Environment(\.dismiss) private var dismiss
     @State private var threads = ChatThread.samples
     @State private var query = ""
-    var onClose: () -> Void
     var onSelect: (ChatThread) -> Void
-    var onNew: () -> Void
 
     private var filtered: [ChatThread] {
         query.isEmpty ? threads : threads.filter { $0.title.localizedCaseInsensitiveContains(query) }
@@ -16,53 +16,37 @@ struct ThreadsDrawer: View {
     private var recent: [ChatThread] { filtered.filter { !$0.pinned } }
 
     var body: some View {
-        VStack(spacing: 0) {
-            header
-            searchField
-            List {
-                if !pinned.isEmpty {
-                    Section("Pinned") { ForEach(pinned) { row($0) } }
-                }
-                Section("Recent") { ForEach(recent) { row($0) } }
+        List {
+            if !pinned.isEmpty {
+                Section("Pinned") { ForEach(pinned) { row($0) } }
             }
-            .listStyle(.plain)
-            .scrollContentBackground(.hidden)
-            accountRow
+            Section("Recent") { ForEach(recent) { row($0) } }
         }
-    }
-
-    // 顶部:三横线(关闭)· 标题 · 新建 —— 图标 = .vm.label(同聊天页顶栏)
-    private var header: some View {
-        HStack(spacing: 12) {
-            Button { onClose() } label: { VMIcon(name: "menu", size: 20, color: .vm.label) }
-                .buttonStyle(.plain)
-            Text("Chats").font(.vm.title3).foregroundStyle(Color.vm.label)
-            Spacer()
-            Button { onNew() } label: { VMIcon(name: "plus", size: 20, color: .vm.label) }
-                .buttonStyle(.plain)
+        .listStyle(.insetGrouped)
+        .scrollContentBackground(.hidden)
+        .background(Color.vm.bgGrouped.ignoresSafeArea())
+        .searchable(text: $query, prompt: "Search chats")
+        .tint(Color.vm.tint)
+        .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
+        .toolbar {
+            ToolbarItem(placement: .principal) {
+                Text("Chats").font(.vm.headline).foregroundStyle(Color.vm.label)
+            }
+            ToolbarItem(placement: .topBarTrailing) {
+                Button { dismiss() } label: {
+                    VMIcon(name: "chevron-right", size: 18, color: .vm.label)   // 右上返回
+                }
+            }
         }
-        .padding(.horizontal, 16)
-        .padding(.top, 14)
-        .padding(.bottom, 10)
-    }
-
-    private var searchField: some View {
-        HStack(spacing: 8) {
-            VMIcon(name: "search", size: 16, color: .vm.labelTertiary)
-            TextField("Search chats", text: $query)
-                .font(.vm.subhead)
-                .foregroundStyle(Color.vm.label)
-                .tint(Color.vm.tint)
-        }
-        .padding(.horizontal, 12)
-        .frame(height: 38)
-        .background(Color.vm.fill3, in: RoundedRectangle(cornerRadius: VM.radius.md, style: .continuous))
-        .padding(.horizontal, 16)
-        .padding(.bottom, 8)
+        .safeAreaInset(edge: .bottom) { accountRow }
     }
 
     private func row(_ t: ChatThread) -> some View {
-        Button { onSelect(t) } label: {
+        Button {
+            onSelect(t)
+            dismiss()
+        } label: {
             HStack(spacing: 12) {
                 Text(t.emoji)
                     .font(.system(size: 20))
@@ -82,12 +66,11 @@ struct ThreadsDrawer: View {
                     Text(t.updated).font(.vm.caption1).foregroundStyle(Color.vm.labelTertiary)
                 }
             }
-            .padding(.vertical, 4)
+            .frame(height: 48)
             .contentShape(Rectangle())
         }
         .buttonStyle(.plain)
-        .listRowBackground(Color.clear)
-        .listRowSeparatorTint(Color.vm.separatorHairline)
+        .listRowBackground(Color.vm.bgElevated)
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
             Button(role: .destructive) { delete(t) } label: { Label("Delete", systemImage: "trash") }
             Button { togglePin(t) } label: {
@@ -110,6 +93,7 @@ struct ThreadsDrawer: View {
         }
         .padding(.horizontal, 20)
         .padding(.vertical, 12)
+        .background(.thinMaterial)
         .overlay(Rectangle().fill(Color.vm.separatorHairline).frame(height: 1), alignment: .top)
     }
 

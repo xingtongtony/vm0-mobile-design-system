@@ -1,8 +1,7 @@
 import SwiftUI
 import UIKit
 
-// 组件(VMIcon / AgentAvatar / RunningDot / GlassCircleButton / GlassPill / SideDrawer)
-// 都在 VMComponents.swift —— 单一真源,改那里即全局更新。
+// 组件都在 VMComponents.swift —— 单一真源,改那里即全局更新。
 
 struct ChatView: View {
     @State private var messages: [ChatMessage] = ChatMessage.sampleThread
@@ -14,31 +13,29 @@ struct ChatView: View {
     }
 
     var body: some View {
-        Group {
-            if messages.isEmpty {
-                emptyState
-            } else {
-                ScrollView {
-                    VStack(alignment: .leading, spacing: 22) {
-                        ForEach(messages) { messageView($0) }
+        NavigationStack {
+            Group {
+                if messages.isEmpty {
+                    emptyState
+                } else {
+                    ScrollView {
+                        VStack(alignment: .leading, spacing: 22) {
+                            ForEach(messages) { messageView($0) }
+                        }
+                        .padding(.horizontal, 20)
+                        .padding(.top, 12)
                     }
-                    .padding(.horizontal, 20)
-                    .padding(.top, 12)
+                    .defaultScrollAnchor(.bottom)
+                    .scrollDismissesKeyboard(.interactively)   // 下滑可交互收起键盘
                 }
-                .defaultScrollAnchor(.bottom)
-                .scrollDismissesKeyboard(.interactively)   // 下滑可交互收起键盘
             }
-        }
-        .safeAreaInset(edge: .top) { topBar }
-        .safeAreaInset(edge: .bottom) { ChatComposer(onSend: sendMessage) }
-        .background(Color.vm.bgGrouped.ignoresSafeArea())
-        .overlay(alignment: .leading) {
-            SideDrawer(isOpen: $showThreads) {
-                ThreadsDrawer(
-                    onClose: { showThreads = false },
-                    onSelect: { _ in messages = ChatMessage.sampleThread; showThreads = false },
-                    onNew: { startNewChat(); showThreads = false }
-                )
+            .safeAreaInset(edge: .top) { topBar }
+            .safeAreaInset(edge: .bottom) { ChatComposer(onSend: sendMessage) }
+            .background(Color.vm.bgGrouped.ignoresSafeArea())
+            .toolbar(.hidden, for: .navigationBar)   // 聊天页用自定义 topBar,隐藏系统导航栏
+            // 左上角按钮 → 原生 push 整页 Chats(从右侧滑入)
+            .navigationDestination(isPresented: $showThreads) {
+                ChatsPage(onSelect: { _ in messages = ChatMessage.sampleThread })
             }
         }
     }
