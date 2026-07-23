@@ -71,6 +71,9 @@ struct Model: Identifiable, Hashable {
     var name: String
     var icon: String
 
+    // 去掉 "Claude " 前缀的短名(button 上只显示这个)
+    var short: String { name.replacingOccurrences(of: "Claude ", with: "") }
+
     static let samples: [Model] = [
         .init(id: "opus",     name: "Claude Opus 4.8",   icon: "model-anthropic"),
         .init(id: "sonnet",   name: "Claude Sonnet 4.5", icon: "model-anthropic"),

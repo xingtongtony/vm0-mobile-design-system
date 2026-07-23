@@ -9,7 +9,6 @@ struct ChatComposer: View {
     @State private var input = ""
     @State private var showAddSheet = false
     @State private var showWorkflows = false
-    @State private var showModelPicker = false
     @State private var modelID = Model.defaultID
     @FocusState private var focused: Bool
 
@@ -28,11 +27,11 @@ struct ChatComposer: View {
                 .padding(.horizontal, 18)
                 .padding(.top, 20)                    // chatbox 更高一点
 
-            // 控件行:模型 pill(左下角) · + · skill · 发送;间距 8
+            // 控件行:+ · skill · 模型菜单 · 发送;间距 8
             HStack(alignment: .center, spacing: 8) {
-                modelPill
                 CircleIconButton(icon: "plus") { showAddSheet = true }
                 CircleIconButton(icon: "route", iconSize: 19) { showWorkflows = true }
+                modelMenu
 
                 Spacer(minLength: 8)
 
@@ -70,51 +69,21 @@ struct ChatComposer: View {
         }
     }
 
-    // 模型切换 pill(图标 + 名称 + 下拉)—— 放 chatbox 左下角
-    private var modelPill: some View {
-        Button { showModelPicker = true } label: {
-            HStack(spacing: 6) {
-                VMImage(name: currentModel.icon, size: 18)
-                Text(currentModel.name)
-                    .font(.vm.subhead).foregroundStyle(Color.vm.label).lineLimit(1)
-                VMIcon(name: "chevron-down", size: 12, color: .vm.labelSecondary)
-            }
-            .padding(.leading, 8).padding(.trailing, 10)
-            .frame(height: 34)
-            .background(Color.vm.fill3, in: Capsule())
-        }
-        .buttonStyle(.plain)
-        .popover(isPresented: $showModelPicker) {
-            modelPicker.presentationCompactAdaptation(.popover)
-        }
-    }
-
-    private var modelPicker: some View {
-        VStack(spacing: 0) {
-            ForEach(Array(Model.samples.enumerated()), id: \.element.id) { idx, m in
-                Button {
-                    modelID = m.id
-                    showModelPicker = false
-                } label: {
-                    HStack(spacing: 10) {
-                        VMImage(name: m.icon, size: 22)
-                        Text(m.name).font(.vm.body).foregroundStyle(Color.vm.label)
-                        Spacer(minLength: 24)
-                        if m.id == modelID {
-                            VMIcon(name: "check", size: 16, color: .vm.tint)
-                        }
-                    }
-                    .padding(.horizontal, 14).padding(.vertical, 10)
-                    .contentShape(Rectangle())
-                }
-                .buttonStyle(.plain)
-                if idx < Model.samples.count - 1 {
-                    Divider().overlay(Color.vm.separatorHairline)
+    // 模型切换 —— 原生 Menu(Picker 自动打勾)。button 只显示短名(无图标/无箭头/无 "Claude")
+    private var modelMenu: some View {
+        Menu {
+            Picker("Model", selection: $modelID) {
+                ForEach(Model.samples) { m in
+                    Text(m.short).tag(m.id)
                 }
             }
+        } label: {
+            Text(currentModel.short)
+                .font(.vm.subhead).foregroundStyle(Color.vm.label).lineLimit(1)
+                .padding(.horizontal, 12)
+                .frame(height: 34)
+                .background(Color.vm.fill3, in: Capsule())
         }
-        .frame(width: 240)
-        .background(Color.vm.bgElevated)
     }
 
     private func send() {
