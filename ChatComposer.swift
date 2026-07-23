@@ -79,10 +79,13 @@ struct ChatComposer: View {
             }
         } label: {
             Text(currentModel.short)
-                .font(.vm.subhead).foregroundStyle(Color.vm.label).lineLimit(1)
+                .font(.vm.subhead).foregroundStyle(Color.vm.label)
+                .lineLimit(1)
+                .fixedSize(horizontal: true, vertical: false)   // 始终按完整宽度,不被瞬时挤窄截断
                 .padding(.horizontal, 12)
                 .frame(height: 34)
                 .background(Color.vm.fill3, in: Capsule())
+                .animation(nil, value: modelID)                 // 切换不做宽度动画
         }
     }
 
