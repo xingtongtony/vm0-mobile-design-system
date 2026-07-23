@@ -74,9 +74,13 @@ struct ChatsPage: View {
         .buttonStyle(.plain)
         .listRowBackground(Color.vm.bgElevated)
         .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-            Button(role: .destructive) { delete(t) } label: { Label("Delete", systemImage: "trash") }
+            Button(role: .destructive) { delete(t) } label: {
+                Label { Text("Delete") } icon: { VMIcon(name: "trash", size: 18, color: .white) }
+            }
             Button { togglePin(t) } label: {
-                Label(t.pinned ? "Unpin" : "Pin", systemImage: t.pinned ? "pin.slash" : "pin")
+                Label { Text(t.pinned ? "Unpin" : "Pin") } icon: {
+                    VMIcon(name: t.pinned ? "pinned-off" : "pin", size: 18, color: .white)
+                }
             }
             .tint(Color.vm.tint)
         }
