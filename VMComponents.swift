@@ -170,7 +170,7 @@ struct VMSheetChrome: ViewModifier {
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
                         Button { onClose() } label: {
-                            VMIcon(name: "x", size: 16, color: .vm.labelSecondary)
+                            VMIcon(name: "x", size: 18, color: .vm.label)
                         }
                     }
                     ToolbarItem(placement: .principal) {
