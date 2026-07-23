@@ -1,13 +1,13 @@
 import SwiftUI
 
-// Chats 整页 —— 由聊天页左上角按钮原生 push 进来(从右侧滑入)。
+// Chats 整页 —— 由聊天页左上角按钮从左侧滑入(全屏覆盖,自带 NavigationStack)。
 // 全原生:List(insetGrouped) + .searchable(iOS 26 底部搜索) + 系统导航栏(标题走 Noto Sans);
-// header 右侧是返回按钮。选中一条 → 载入并 pop 回聊天。
+// header 右侧是返回按钮(chevron-left)。选中一条 → 载入并关闭回聊天。
 struct ChatsPage: View {
-    @Environment(\.dismiss) private var dismiss
     @State private var threads = ChatThread.samples
     @State private var query = ""
     var onSelect: (ChatThread) -> Void
+    var onClose: () -> Void
 
     private var filtered: [ChatThread] {
         query.isEmpty ? threads : threads.filter { $0.title.localizedCaseInsensitiveContains(query) }
@@ -16,36 +16,38 @@ struct ChatsPage: View {
     private var recent: [ChatThread] { filtered.filter { !$0.pinned } }
 
     var body: some View {
-        List {
-            if !pinned.isEmpty {
-                Section("Pinned") { ForEach(pinned) { row($0) } }
+        NavigationStack {
+            List {
+                if !pinned.isEmpty {
+                    Section("Pinned") { ForEach(pinned) { row($0) } }
+                }
+                Section("Recent") { ForEach(recent) { row($0) } }
             }
-            Section("Recent") { ForEach(recent) { row($0) } }
-        }
-        .listStyle(.insetGrouped)
-        .scrollContentBackground(.hidden)
-        .background(Color.vm.bgGrouped.ignoresSafeArea())
-        .searchable(text: $query, prompt: "Search chats")
-        .tint(Color.vm.tint)
-        .navigationBarTitleDisplayMode(.inline)
-        .navigationBarBackButtonHidden(true)
-        .toolbar {
-            ToolbarItem(placement: .principal) {
-                Text("Chats").font(.vm.headline).foregroundStyle(Color.vm.label)
-            }
-            ToolbarItem(placement: .topBarTrailing) {
-                Button { dismiss() } label: {
-                    VMIcon(name: "chevron-right", size: 18, color: .vm.label)   // 右上返回
+            .listStyle(.insetGrouped)
+            .scrollContentBackground(.hidden)
+            .background(Color.vm.bgGrouped.ignoresSafeArea())
+            .searchable(text: $query, prompt: "Search chats")
+            .tint(Color.vm.tint)
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .principal) {
+                    Text("Chats").font(.vm.headline).foregroundStyle(Color.vm.label)
+                }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button { onClose() } label: {
+                        VMIcon(name: "chevron-left", size: 18, color: .vm.label)   // 右上返回
+                    }
                 }
             }
+            .safeAreaInset(edge: .bottom) { accountRow }
         }
-        .safeAreaInset(edge: .bottom) { accountRow }
+        .background(Color.vm.bg.ignoresSafeArea())   // 不透明底,整页覆盖聊天
     }
 
     private func row(_ t: ChatThread) -> some View {
         Button {
             onSelect(t)
-            dismiss()
+            onClose()
         } label: {
             HStack(spacing: 12) {
                 Text(t.emoji)

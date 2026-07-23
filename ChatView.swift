@@ -13,31 +13,36 @@ struct ChatView: View {
     }
 
     var body: some View {
-        NavigationStack {
-            Group {
-                if messages.isEmpty {
-                    emptyState
-                } else {
-                    ScrollView {
-                        VStack(alignment: .leading, spacing: 22) {
-                            ForEach(messages) { messageView($0) }
-                        }
-                        .padding(.horizontal, 20)
-                        .padding(.top, 12)
+        Group {
+            if messages.isEmpty {
+                emptyState
+            } else {
+                ScrollView {
+                    VStack(alignment: .leading, spacing: 22) {
+                        ForEach(messages) { messageView($0) }
                     }
-                    .defaultScrollAnchor(.bottom)
-                    .scrollDismissesKeyboard(.interactively)   // 下滑可交互收起键盘
+                    .padding(.horizontal, 20)
+                    .padding(.top, 12)
                 }
-            }
-            .safeAreaInset(edge: .top) { topBar }
-            .safeAreaInset(edge: .bottom) { ChatComposer(onSend: sendMessage) }
-            .background(Color.vm.bgGrouped.ignoresSafeArea())
-            .toolbar(.hidden, for: .navigationBar)   // 聊天页用自定义 topBar,隐藏系统导航栏
-            // 左上角按钮 → 原生 push 整页 Chats(从右侧滑入)
-            .navigationDestination(isPresented: $showThreads) {
-                ChatsPage(onSelect: { _ in messages = ChatMessage.sampleThread })
+                .defaultScrollAnchor(.bottom)
+                .scrollDismissesKeyboard(.interactively)   // 下滑可交互收起键盘
             }
         }
+        .safeAreaInset(edge: .top) { topBar }
+        .safeAreaInset(edge: .bottom) { ChatComposer(onSend: sendMessage) }
+        .background(Color.vm.bgGrouped.ignoresSafeArea())
+        // 左上角按钮 → Chats 整页从左侧划入(原生 .move 过渡;页面内容全原生)
+        .overlay {
+            if showThreads {
+                ChatsPage(
+                    onSelect: { _ in messages = ChatMessage.sampleThread },
+                    onClose: { showThreads = false }
+                )
+                .transition(.move(edge: .leading))
+                .zIndex(1)
+            }
+        }
+        .animation(.easeOut(duration: 0.28), value: showThreads)
     }
 
     // 顶栏:三横线抽屉钮 · agent 切换 pill(无标题) · 新建圆钮
