@@ -58,7 +58,7 @@ struct WorkflowsSheet: View {
         .searchable(text: $query, prompt: "Search workflows")
         .tint(Color.vm.tint)
         .vmSheetChrome(title: "Workflows", onClose: onClose)
-        .presentationDetents([.large])
+        .presentationDetents([.medium, .large])   // 默认半层,用户可自行拖到全层
         .presentationDragIndicator(.visible)
         .presentationBackground(.ultraThinMaterial)
     }
