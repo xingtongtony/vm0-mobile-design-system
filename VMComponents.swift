@@ -120,6 +120,37 @@ enum VMMenuIcon {
     }
 }
 
+// MARK: - VMPickerMenu
+// 通用"带图标 + 选中打勾"的原生 Menu(单一真源)。模型切换 / agent 切换共用。
+// items 给 id/标题/图标名(bundle png);trigger 是自定义触发器外观。
+struct VMMenuItem: Identifiable {
+    let id: String
+    var title: String
+    var icon: String
+}
+
+struct VMPickerMenu<Trigger: View>: View {
+    let items: [VMMenuItem]
+    @Binding var selection: String
+    @ViewBuilder var trigger: () -> Trigger
+
+    var body: some View {
+        Menu {
+            ForEach(items) { it in
+                Button { selection = it.id } label: {
+                    if it.id == selection {
+                        Label { Text("✓  " + it.title) } icon: { VMMenuIcon.image(it.icon) }
+                    } else {
+                        Label { Text(it.title) } icon: { VMMenuIcon.image(it.icon) }
+                    }
+                }
+            }
+        } label: {
+            trigger()
+        }
+    }
+}
+
 // MARK: - CircleIconButton
 // 圆形灰底图标钮(composer 的 + / skill 等)。默认 38,与发送钮同尺寸。
 struct CircleIconButton: View {

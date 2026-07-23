@@ -69,23 +69,14 @@ struct ChatComposer: View {
         }
     }
 
-    // 模型切换 —— 原生 Menu,每项前面带模型 logo(VMMenuIcon 带内边距,不会过大);选中项打勾
+    // 模型切换 —— 复用组件 VMPickerMenu;触发器是带 logo 的胶囊
     private var modelMenu: some View {
-        Menu {
-            ForEach(Model.samples) { m in
-                Button {
-                    modelID = m.id
-                } label: {
-                    if m.id == modelID {
-                        Label { Text("✓  " + m.short) } icon: { VMMenuIcon.image(m.icon) }
-                    } else {
-                        Label { Text(m.short) } icon: { VMMenuIcon.image(m.icon) }
-                    }
-                }
-            }
-        } label: {
+        VMPickerMenu(
+            items: Model.samples.map { VMMenuItem(id: $0.id, title: $0.short, icon: $0.icon) },
+            selection: $modelID
+        ) {
             HStack(spacing: 6) {
-                VMImage(name: currentModel.icon, size: 18)      // logo 放回 button 上
+                VMImage(name: currentModel.icon, size: 18)
                 Text(currentModel.short)
                     .font(.vm.subhead).foregroundStyle(Color.vm.label)
                     .lineLimit(1)
@@ -94,7 +85,7 @@ struct ChatComposer: View {
             .padding(.leading, 8).padding(.trailing, 12)
             .frame(height: 34)
             .background(Color.vm.fill3, in: Capsule())
-            .animation(nil, value: modelID)                     // 切换不做宽度动画
+            .animation(nil, value: modelID)
         }
     }
 

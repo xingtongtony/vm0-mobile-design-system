@@ -55,21 +55,12 @@ struct ChatView: View {
         .padding(.vertical, 10)
     }
 
-    // agent 切换入口 —— 原生 Menu,每项带头像(VMMenuIcon);选中项打勾。触发器是玻璃 pill
+    // agent 切换入口 —— 复用组件 VMPickerMenu;触发器是玻璃 pill
     private var agentSwitcher: some View {
-        Menu {
-            ForEach(Agent.samples) { a in
-                Button {
-                    agentID = a.id
-                } label: {
-                    if a.id == agentID {
-                        Label { Text("✓  " + a.name) } icon: { VMMenuIcon.image(a.avatar) }
-                    } else {
-                        Label { Text(a.name) } icon: { VMMenuIcon.image(a.avatar) }
-                    }
-                }
-            }
-        } label: {
+        VMPickerMenu(
+            items: Agent.samples.map { VMMenuItem(id: $0.id, title: $0.name, icon: $0.avatar) },
+            selection: $agentID
+        ) {
             HStack(spacing: 8) {
                 AgentAvatar(agent: currentAgent, size: 24)
                 Text(currentAgent.name)
