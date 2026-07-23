@@ -64,7 +64,7 @@ struct ChatView: View {
             HStack(spacing: 8) {
                 AgentAvatar(agent: currentAgent, size: 24)
                 Text(currentAgent.name)
-                    .font(.vm.headline)
+                    .font(.vm.body)                    // 从 headline(semibold)改 body(regular),不那么粗
                     .foregroundStyle(Color.vm.label)
                 VMIcon(name: "chevron-down", size: 14, color: .vm.labelSecondary)
             }

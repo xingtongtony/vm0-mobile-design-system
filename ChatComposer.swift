@@ -82,8 +82,8 @@ struct ChatComposer: View {
                     .lineLimit(1)
                     .fixedSize(horizontal: true, vertical: false)
             }
-            .padding(.leading, 8).padding(.trailing, 12)
-            .frame(height: 34)
+            .padding(.leading, 10).padding(.trailing, 12)
+            .frame(height: 38)                          // 与 +/skill/发送 同高
             .background(Color.vm.fill3, in: Capsule())
             .animation(nil, value: modelID)
         }
